@@ -1,3 +1,4 @@
+{% load static %}
 <!doctype html>
 <html lang="ru">
 <head>
@@ -61,9 +62,18 @@
         <td>280 (+40%)</td>
     </tr>
 </table>
-<button  type="button" class="btn btn-light button1">Инвестиции</button>
-<button type="button" class="btn btn-dark">Топ игроков</button>
+<form action="{%  url 'user_page:to_MainWindow'%}" method="post">
 
+    {% csrf_token %}
+
+    <button class="btn btn-dark button1">Инвестировать</button>
+</form>
+<form action="{%  url 'user_page:to_top_players'%}" method="post">
+
+    {% csrf_token %}
+
+    <button class="btn btn-light button1">Личная страничка</button>
+</form>
 <!-- Optional JavaScript -->
 <!-- jQuery first, then Popper.js, then Bootstrap JS -->
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
