@@ -31,3 +31,10 @@ def to_personal_page(request):
     except:
         raise Http404('Что-то пошло не так')
     return render(request, "player/Personal Page.html")
+
+def to_admin_page(request):
+    try:
+        pass
+    except:
+        raise Http404('Что-то пошло не так')
+    return render(request, "player/AdminPage.html")
