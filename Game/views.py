@@ -7,7 +7,11 @@ from django.shortcuts import render
 
 
 def index(request):
-    return render(request, "player/statistica.html")
+    try:
+        pass
+    except:
+        raise Http404('Что-то пошло не так')
+    return render(request, "player/authorization.html")
 
 def to_MainWindow(request):
     try:
