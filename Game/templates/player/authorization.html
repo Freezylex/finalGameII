@@ -1,7 +1,7 @@
 {% load static %}
 {% load poll_extras  %}
-{{ object|verbose_name }}
-{{ object|verbose_name_plural }}
+{#{{ object|verbose_name }}#}
+{#{{ object|verbose_name_plural }}#}
 <!doctype html>
 <html lang="ru">
 <head>
@@ -19,7 +19,7 @@
 
     {% csrf_token %}
     <p>
-    <input type="text" name="user" id ="user" placeholder="Your Name">
+    <input type="text" name="user" placeholder="Your Name">
     </p>
     <p>
     <button type=submit class="btn btn-dark width_bottom shape1">Вход</button>

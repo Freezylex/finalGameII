@@ -12,25 +12,29 @@
     <title>Economic Game</title>
 </head>
 <body>
-<h3 class="lead heading">Александр Сергеевич</h3>
+{% if player %}
+    <h3 class="lead heading">{{player.Name}}</h3>
+{% else %}
+    <h3 class="lead heading">не найдено</h3>
+{% endif %}
 <table class="table">
     <tr>
-        <th>Актив A <br> 130 (+30%)</th>
-        <th>Актив Б <br> 110 (+10%)</th>
+        <th>Актив A <br> {{ player.Active_a }} {{ player.percentage_increase_active_a}}</th>
+        <th>Актив Б <br> {{ player.Active_b }} {{ player.percentage_increase_active_b }}</th>
     </tr>
 </table>
 <table class="table">
     <tr>
         <td>Пассивный % по образованию:</td>
-        <td>0%</td>
+        <td>{{ player.education }}</td>
     </tr>
     <tr>
         <td>Текущий год:</td>
-        <td>2</td>
+        <td>{{ player.Day }}</td>
     </tr>
     <tr>
         <td>Текущее место в топе:</td>
-        <td>14</td>
+        <td> Допилить</td>
     </tr>
 </table>
 <h4 class="lead heading">Топ игроков</h4>
@@ -41,11 +45,15 @@
         <th scope="col">Имя</th>
         <th scope="col">Капитал</th>
     </tr>
+{% if players %}
+    {% for i in players %}
     <tr>
-        <th scope="row">1</th>
-        <td>Иван Юсупов</td>
-        <td>280 (+40%)</td>
+        <th scope="row">{{ i.id }}</th>
+        <td>{{ i.Name }}</td>
+        <td>{{ i.SumActive }} (+40%)</td>
     </tr>
+    {% endfor %}
+{% endif %}
     <tr>
         <th scope="row">2</th>
         <td>Аглай Матрёшкин</td>
