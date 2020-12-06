@@ -24,6 +24,15 @@ class Player(models.Model):
         self.Day += 1
 
 
+# class Factor(models.Model):
+#     Name = models.CharField('name', max_length=200, primary_key=True, unique=True, null=False)
+#     Day = models.IntegerField('day', null=False)
+#     UserID = models.ForeignKey(Player)
+#
+#     def __str__(self):
+#         return self.Name   # factor - это табличка с ресурсами, которые выбрали все пользователи.
+#
+
 
 
 
