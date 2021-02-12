@@ -47,14 +47,26 @@ class Player(models.Model):
 
 
 
-# class Factor(models.Model):
-#     Name = models.CharField('name', max_length=200, primary_key=True, unique=True, null=False)
-#     Day = models.IntegerField('day', null=False)
-#     UserID = models.ForeignKey(Player)
-#
-#     def __str__(self):
-#         return self.Name   # factor - это табличка с ресурсами, которые выбрали все пользователи.
-#
+class Factor(models.Model):
+    Name1 = models.CharField('name1', max_length=200)
+    Name2 = models.CharField('name2', max_length=200)
+    Day = models.IntegerField('day', null=False)
+    UserID = models.ForeignKey(Player, on_delete=models.CASCADE, null=False)
+
+
+
+    def __str__(self):
+        return self.Name   # factor - это табличка с ресурсами, которые выбрали все пользователи.
+
+
+class Active(models.Model):
+    Id = models.AutoField(primary_key=True)
+    Name = models.CharField('name', max_length=200, null=False, unique=True)
+    Name_eng = models.CharField('name_eng', max_length=200)
+
+    def __str__(self):
+        return self.Name
+
 
 
 

@@ -12,7 +12,7 @@ sys.path.append(project_dir)
 os.environ['DJANGO_SETTINGS_MODULE'] = 'settings'
 import django
 django.setup()
-from Game.models import Player
+from Game.models import Player, Active, Factor
 from Game.repository.repository import Repository
 import numpy as np
 
@@ -25,7 +25,7 @@ import numpy as np
 # print(Player.objects.order_by('-Active_a', 'Active_b'))
 # players = Player.objects.all()
 # print(Player.objects.all())
-Player.objects.all().delete()
+# Player.objects.all().delete()
 
 
 # game_1 = Repository(np.arange(1,4,1))
@@ -37,3 +37,15 @@ Player.objects.all().delete()
 #
 # print(game_1.gamble(1))
 
+
+# k = ['Банк', 'Стартап Соседа', 'Образование', 'Гособлигации'
+#     , 'Корпоративыне облигации']
+# z = ['bank', 'startap', 'obrasovanie', 'gosobligatszii', 'korporativnye']
+# for i in range(len(k)):
+#     act = Active(Id=i, Name=k[i], Name_eng=z[i])
+#     act.save()
+# print(Active.objects.all())
+
+a = Active.objects.all()[:3]
+a = list(map(list, (enumerate(a))))
+print(a)

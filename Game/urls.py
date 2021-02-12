@@ -9,4 +9,5 @@ urlpatterns = [
     path('test/', views.to_top_players, name='to_top_players'),
     path('test3/', views.to_personal_page, name='to_personal_page'),
     path('adminPage/', views.to_admin_page, name='to_admin_page'),
+    path('testic/', views.next_step, name='next_step'),
 ]

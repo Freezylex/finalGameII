@@ -8,17 +8,21 @@
 
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="../../static/css/style.css">
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
     <title>Economic Game</title>
 </head>
 <body class="heading">
-<h3 class="lead heading">Александр Сергеевич</h3>
+{% if player %}
+    <h3 class="lead heading">{{player.Name}}</h3>
+{% else %}
+<h3 class="lead heading">Not found stata</h3>
+{% endif %}
 <table class="table heading">
     <tr>
-        <th>Актив A <br> 130 (+30%) <br>
+        <th>Актив A <br> {{ player.Active_a }} ({{ player.percentage_increase_active_a }}%) <br>
         </th>
-        <th>Актив Б <br> 110 (+10%)</th>
+        <th>Актив Б <br> {{ player.Active_b }} ({{ player.percentage_increase_active_b }}%)</th>
     </tr>
 </table>
 <p class="heading"><sup>Общий объем: 240 (+ 20%)</sup></p>
@@ -72,7 +76,7 @@
 
     <button class="btn btn-dark button1">Инвестировать</button>
 </form>
-<form action="{%  url 'user_page:to_personal_page'%}" method="post">
+<form action="{%  url 'user_page:next_step'%}" method="post">
 
     {% csrf_token %}
 
