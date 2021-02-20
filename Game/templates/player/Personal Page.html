@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
     <link rel="stylesheet" href="../../static/css/style.css">
     <title>Economic Game</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 </head>
 <body>
 {% if player %}
@@ -39,50 +40,43 @@
 </table>
 <h4 class="lead heading">Топ игроков</h4>
 
-<table class="table">
+<table class="table tb">
+    <thead>
     <tr>
         <th scope="col">#</th>
         <th scope="col">Имя</th>
         <th scope="col">Капитал</th>
     </tr>
+    </thead>
 {% if players %}
     {% for i in players %}
     <tr>
-        <th scope="row">{{ i.id }}</th>
+        <th scope="row"></th>
         <td>{{ i.Name }}</td>
         <td>{{ i.SumActive }} (+40%)</td>
     </tr>
     {% endfor %}
 {% endif %}
-    <tr>
-        <th scope="row">2</th>
-        <td>Аглай Матрёшкин</td>
-        <td>280 (+40%)</td>
-    </tr>
-    <tr>
-        <th scope="row">3</th>
-        <td>Инвестор 5674</td>
-        <td>280 (+40%)</td>
-    </tr>
-    <tr>
-        <th scope="row">4</th>
-        <td>Сын маминой подр...</td>
-        <td>280 (+40%)</td>
-    </tr>
 </table>
-<form action="{%  url 'user_page:to_MainWindow'%}" method="post">
+<script>
+$('.tb tbody tr').each(function(i) {
+var number = i + 1;
+$(this).find('th:first').text(number+".");
+});
+</script>
+<form action="{%  url 'user_page:to_MainWindow' player.Name%}" method="post">
 
     {% csrf_token %}
 
     <button class="btn btn-dark button1">Инвестировать</button>
 </form>
-<form action="{%  url 'user_page:to_top_players'%}" method="post">
+<form action="{%  url 'user_page:to_top_players' player.Name%}" method="post">
 
     {% csrf_token %}
 
     <button class="btn btn-light button1">Личная страничка</button>
 </form>
-<form action="{%  url 'user_page:next_step'%}" method="post">
+<form action="{%  url 'user_page:next_step' player.Name %}" method="post">
 
     {% csrf_token %}
 

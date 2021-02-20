@@ -1,5 +1,7 @@
 from django.http import Http404, HttpResponseRedirect
 from django.shortcuts import render
+from django.urls import reverse
+
 from .static.hard.banking import Repository
 # Create your views here.
 
@@ -30,21 +32,22 @@ def index(request):
     return render(request, "player/authorization.html")
 
 
-def to_MainWindow(request):
+def to_MainWindow(request, player):
     try:
-        player = Player.objects.get(Name=user_name[0])
+        print(player)
+        player = Player.objects.get(Name=player)
         # player.save()
         players = Player.objects.all()  # TODO sort palyers according their effectivness during the game
         actives = Active.objects.all()[:player.Day + 2]
     except:
-        raise Http404('Что-то пошло не так')
+        raise Http404('Что-то пошло не так в to Main menue')
     return render(request, "player/mainWindow.html", {'player': player, 'players': players,
                                                       'actives' : actives})
 
 
-def to_top_players(request):
+def to_top_players(request, player_nam):
     try:
-        player = Player.objects.get(Name=user_name[0])
+        player = Player.objects.get(Name=player_nam)
         # player.save()
         players = Player.objects.all() # TODO sort palyers according their effectivness during the game
 
@@ -64,15 +67,14 @@ def to_personal_page(request):
     return render(request, "player/Personal Page.html", {'player': player, 'players': players})
 
 
-def next_step(request):
+def next_step(request, play):
     try:
         print('d')
         print(user_name[0])
-        player = Player.objects.get(Name=user_name[0])
+        player = Player.objects.get(Name=play)
         print('d')
         # player.save()
-        players = Player.objects.all() # TODO sort palyers according their effectivness during the game
-
+        players = Player.objects.order_by('Active_a' + 'Active_b')
     except:
         raise Http404('Что-то пошло не так oooo')
     return render(request, "player/Personal Page.html", {'player': player, 'players': players})
@@ -83,3 +85,23 @@ def to_admin_page(request):
     except:
         raise Http404('Что-то пошло не так')
     return render(request, "player/AdminPage.html")
+
+def make_choice(request, player_name):
+    try:
+        print(request)
+        player = Player.objects.get(Name=player_name)
+    except:
+        raise Http404('Что-то пошло не так в make_chio')
+    return HttpResponseRedirect(reverse('user_page:to_MainWindow', args=player.Name))
+
+# def to_M(request, player_name):
+#     try:
+#         player = Player.objects.get(Name=player_name)
+#         # player.save()
+#         players = Player.objects.all()  # TODO sort palyers according their effectivness during the game
+#         actives = Active.objects.all()[:player.Day + 2]
+#     except:
+#         raise Http404('Что-то пошло не так в to Main menue')
+#     return render(request, "player/mainWindow.html", {'player': player, 'players': players,
+#                                                       'actives' : actives})
+
