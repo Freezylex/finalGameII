@@ -52,10 +52,10 @@
 
             <td>{{ active.Name }}</td>
             <td>
-                <input type="checkbox" name="choiceA[]" />
+                <input type="checkbox" name={{ active.Name }} />
             </td>
             <td>
-                 <input type="checkbox" name="choiceB[]"/>
+                 <input type="checkbox" name={{ active.Name_eng }}/>
             </td>
         </tr>
         {% endfor %}

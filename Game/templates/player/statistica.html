@@ -70,13 +70,13 @@
         <td>    </td>
     </tr>
 </table>
-<form action="{%  url 'user_page:to_MainWindow'%}" method="post">
+<form action="{%  url 'user_page:to_MainWindow' player.Name%}" method="post">
 
     {% csrf_token %}
 
     <button class="btn btn-dark button1">Инвестировать</button>
 </form>
-<form action="{%  url 'user_page:next_step'%}" method="post">
+<form action="{%  url 'user_page:next_step' player.Name %}" method="post">
 
     {% csrf_token %}
 

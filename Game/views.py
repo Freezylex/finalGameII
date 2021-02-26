@@ -34,10 +34,9 @@ def index(request):
 
 def to_MainWindow(request, player):
     try:
-        print(player)
         player = Player.objects.get(Name=player)
         # player.save()
-        players = Player.objects.all()  # TODO sort palyers according their effectivness during the game
+        players = Player.objects.order_by('Active_a').order_by('Active_b')
         actives = Active.objects.all()[:player.Day + 2]
     except:
         raise Http404('Что-то пошло не так в to Main menue')
@@ -69,12 +68,9 @@ def to_personal_page(request):
 
 def next_step(request, play):
     try:
-        print('d')
-        print(user_name[0])
         player = Player.objects.get(Name=play)
-        print('d')
         # player.save()
-        players = Player.objects.order_by('Active_a' + 'Active_b')
+        players = Player.objects.order_by('Active_a').order_by('Active_b')
     except:
         raise Http404('Что-то пошло не так oooo')
     return render(request, "player/Personal Page.html", {'player': player, 'players': players})
@@ -88,11 +84,17 @@ def to_admin_page(request):
 
 def make_choice(request, player_name):
     try:
-        print(request)
         player = Player.objects.get(Name=player_name)
+        print(request.POST)
+        a = request.POST.get('choiceA[]')
+        print(a)
+        # player.save()
+        players = Player.objects.order_by('Active_a').order_by('Active_b')
+        actives = Active.objects.all()[:player.Day + 2]
     except:
         raise Http404('Что-то пошло не так в make_chio')
-    return HttpResponseRedirect(reverse('user_page:to_MainWindow', args=player.Name))
+    return render(request, "player/mainWindow.html", {'player': player, 'players': players,
+                                                      'actives' : actives})
 
 # def to_M(request, player_name):
 #     try:
