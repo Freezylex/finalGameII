@@ -39,7 +39,7 @@
 </table>
 <h4 class="lead heading">Топ игроков</h4>
 
-<form action="{%  url 'user_page:make_choice' player.Name%}" method="post">
+<form class="d" action="{%  url 'user_page:make_choice' player.Name%}" method="post">
     {% csrf_token %}
     <table class="table">
         <tr>
@@ -55,7 +55,7 @@
                 <input type="checkbox" name={{ active.Name }} />
             </td>
             <td>
-                 <input type="checkbox" name={{ active.Name_eng }}/>
+                 <input type="checkbox" name={{ active.Name_eng }} />
             </td>
         </tr>
         {% endfor %}
@@ -64,13 +64,13 @@
     <button class="btn btn-dark button1">Подтвердить выбор</button>
     </p>
 </form>
-<form action="{%  url 'user_page:next_step' player.Name%}" method="post">
+<form action="{%  url 'user_page:next_step' player.Name %}" method="post">
 
     {% csrf_token %}
 
     <button class="btn btn-dark button1">Топ игроков</button>
 </form>
-<form action="{%  url 'user_page:to_top_players' player.Name%}" method="post">
+<form action="{%  url 'user_page:to_top_players' player.Name %}" method="post">
 
     {% csrf_token %}
 

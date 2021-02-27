@@ -102,11 +102,11 @@ class Repository(object):
         return self.data
 
 
-# game_1 = Repository(np.arange(1,4,1))
-# print(game_1.data)
-# game_1.choice(1,
-#            ["bank","bank","sosed"],
-#            ["bank","sosed","sosed"]
-#            )
-#
-# print(game_1.gamble(1))
+game_1 = Repository(np.arange(1,4,1))
+print(game_1.data)
+game_1.choice(1,
+           ["bank","bank","sosed"],
+           ["bank","sosed","sosed"]
+           )
+
+print(game_1.gamble(1))

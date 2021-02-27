@@ -75,6 +75,7 @@ def next_step(request, play):
         raise Http404('Что-то пошло не так oooo')
     return render(request, "player/Personal Page.html", {'player': player, 'players': players})
 
+
 def to_admin_page(request):
     try:
         pass
@@ -82,19 +83,37 @@ def to_admin_page(request):
         raise Http404('Что-то пошло не так')
     return render(request, "player/AdminPage.html")
 
+
 def make_choice(request, player_name):
     try:
         player = Player.objects.get(Name=player_name)
-        print(request.POST)
-        a = request.POST.get('choiceA[]')
-        print(a)
         # player.save()
         players = Player.objects.order_by('Active_a').order_by('Active_b')
         actives = Active.objects.all()[:player.Day + 2]
+        a = list(dict(request.POST.items()).keys())[1:]
+        print(a)
+        a.sort(key=lambda x: x[0], reverse=True)    # now the first in pair is activeA in russian and etc
+        print(a)
+        print(set([i.Name for i in actives]))
+        print(Factor.objects.all())
+        act_a = Active.objects.get(Name__startswith=a[0])
+        act_b = Active.objects.get(Name_eng__startswith=a[1])
+        user_factors = Factor(Name1=act_a, Name2=act_b, Day=player.Day, UserID=player)
+        # print('we are here')
+        factor = Factor.objects.filter(Day=player.Day, UserID=player)
+        if len(factor) != 0:
+            print(factor)
+            factor.delete()
+            # print('factors deleted')
+            print(Factor.objects.all())
+        user_factors.save()
+        player.NextYear()
+        player.Active_a += 220
+        player.Active_b += 20
     except:
         raise Http404('Что-то пошло не так в make_chio')
     return render(request, "player/mainWindow.html", {'player': player, 'players': players,
-                                                      'actives' : actives})
+                                                      'actives': actives})
 
 # def to_M(request, player_name):
 #     try:

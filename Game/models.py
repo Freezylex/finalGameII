@@ -21,7 +21,7 @@ class Player(models.Model):
     def current(self, day):
         return day == self.Day   # текущий день. Возможно, можно поставить и день - 1
 
-    def NextYear(self, choiceA, choiceB):
+    def NextYear(self):
         self.Day += 1
         # TODO add more functionality
 
@@ -47,18 +47,6 @@ class Player(models.Model):
 
 
 
-class Factor(models.Model):
-    Name1 = models.CharField('name1', max_length=200)
-    Name2 = models.CharField('name2', max_length=200)
-    Day = models.IntegerField('day', null=False)
-    UserID = models.ForeignKey(Player, on_delete=models.CASCADE, null=False)
-
-
-
-    def __str__(self):
-        return self.Name   # factor - это табличка с ресурсами, которые выбрали все пользователи.
-
-
 class Active(models.Model):
     Id = models.AutoField(primary_key=True)
     Name = models.CharField('name', max_length=200, null=False, unique=True)
@@ -68,6 +56,14 @@ class Active(models.Model):
         return self.Name
 
 
+class Factor(models.Model):
+    Name1 = models.ForeignKey(Active, on_delete=models.CASCADE, null=True, related_name='active_a')
+    Name2 = models.ForeignKey(Active, on_delete=models.CASCADE, null=True, related_name='active_b')
+    Day = models.IntegerField('day', null=False)
+    UserID = models.ForeignKey(Player, on_delete=models.CASCADE, null=False)
+
+    def __str__(self):
+        return str(self.Day) + ' ' + str(self.UserID) + ' ' + str(self.Name1) + ' ' + str(self.Name2)
 
 
 
