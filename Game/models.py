@@ -66,4 +66,5 @@ class Factor(models.Model):
         return str(self.Day) + ' ' + str(self.UserID) + ' ' + str(self.Name1) + ' ' + str(self.Name2)
 
 
-
+class Admin(models.Model):
+    Day = models.IntegerField('Day', null=False)

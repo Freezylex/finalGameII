@@ -12,7 +12,7 @@ sys.path.append(project_dir)
 os.environ['DJANGO_SETTINGS_MODULE'] = 'settings'
 import django
 django.setup()
-from Game.models import Player, Active, Factor
+from Game.models import Player, Active, Factor, Admin
 from Game.repository.repository import Repository
 import numpy as np
 
@@ -46,6 +46,4 @@ import numpy as np
 #     act.save()
 # print(Active.objects.all())
 
-a = Active.objects.all()[:3]
-a = list(map(list, (enumerate(a))))
-print(a)
+print(Admin.objects.all()[0].Day)
