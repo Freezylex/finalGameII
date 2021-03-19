@@ -75,3 +75,8 @@ print(Factor.objects.all())
 #            ["bank","sosed","sosed"]
 #            )
 # print(game1.gamble(1))
+a = list(Admin.objects.all())
+# Admin.objects.all().delete()
+# aa = Admin(Day=1)
+# aa.save()
+print(a)

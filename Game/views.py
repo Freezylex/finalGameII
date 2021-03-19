@@ -150,7 +150,8 @@ def next_day(request):
 
 def next_day_admin(request, year):
     try:
-        day = Admin.objects.order_by('-Day')[0].Day
+        day = list(Admin.objects.all())[-1:][0].Day
+        Admin.objects.all().delete()
         user_factors = Factor.objects.filter(Day=day)
         players = Player.objects.all()
         actives = Active.objects.all() # todo допилить админскую страничку
@@ -158,14 +159,14 @@ def next_day_admin(request, year):
         for i in user_factors:
             print(i)
         #сразу же меняем день
-
-        if int(year) == 0:
-            new_day = Admin(Day=day - 2)
+        if int(year) == 1000:
+            if day == 0:
+                day += 1
+            new_day = Admin(Day=day - 1)
         else:
             new_day = Admin(Day=day + 1)
-
         new_day.save()
-        day = Admin.objects.order_by('-Day')[0].Day
+        day = new_day.Day
     except:
         raise Http404('Что-то пошло не так в to Main menue')
     return render(request, "player/AdminPage.html", {'user_factors': user_factors, 'actives': actives,
@@ -174,12 +175,12 @@ def next_day_admin(request, year):
 
 def to_admin_page(request):
     try:
-        day = Admin.objects.order_by('-Day')[0].Day
+        day = 1
         user_factors = Factor.objects.filter(Day=day)
         players = Player.objects.all()
         actives = Active.objects.all() # todo допилить админскую страничку
     except:
-        raise Http404('Что-то пошло не так')
+        raise Http404('Что-то пошло не так в to_admin_page')
     return render(request, "player/AdminPage.html", {'user_factors': user_factors, 'actives': actives,
                                                      'players': players, 'day': day})
 

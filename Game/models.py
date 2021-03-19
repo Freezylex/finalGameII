@@ -69,3 +69,6 @@ class Factor(models.Model):
 
 class Admin(models.Model):
     Day = models.IntegerField('Day', null=False)
+
+    def __str__(self):
+        return "Наступил день " + str(self.Day)
