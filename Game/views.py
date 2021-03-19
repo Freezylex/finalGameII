@@ -2,12 +2,12 @@ from django.http import Http404, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
 
-from .static.hard.banking import Repository
+# from .static.hard.banking import Repository
 # Create your views here.
 
 from django.shortcuts import render
 from .models import Player, Active, Factor, Admin
-# from Game.repository.repository import Repository
+from Game.repository.repository import Repository
 import numpy as np
 
 # game_1 = Repository(np.arange(1,4,1))
@@ -20,7 +20,7 @@ import numpy as np
 # print(game_1.gamble(1))
 
 
-repo = Repository()
+
 
 
 def index(request):
@@ -86,9 +86,10 @@ def next_step(request, play):
 def make_choice(request, player_name):
     try:
         player = Player.objects.get(Name=player_name)
+        day = list(Admin.objects.all())[-1:][0].Day
         # player.save()
         players = Player.objects.order_by('Active_a').order_by('Active_b')
-        actives = Active.objects.all()[:player.Day + 2]
+        actives = Active.objects.all()[:day + 2]
         a = list(dict(request.POST.items()).keys())[1:]
         if len(a) == 2:
             a.sort(key=lambda x: x[0], reverse=True)    # now the first in pair is activeA in russian and etc
@@ -97,9 +98,9 @@ def make_choice(request, player_name):
             print(Factor.objects.all())
             act_a = Active.objects.get(Name__startswith=a[0])
             act_b = Active.objects.get(Name_eng__startswith=a[1])
-            user_factors = Factor(Name1=act_a, Name2=act_b, Day=player.Day, UserID=player)
+            user_factors = Factor(Name1=act_a, Name2=act_b, Day=day, UserID=player)
             # print('we are here')
-            factor = Factor.objects.filter(Day=player.Day, UserID=player)
+            factor = Factor.objects.filter(Day=day, UserID=player)
             if len(factor) != 0:
                 print(factor)
                 factor.delete()
@@ -111,10 +112,11 @@ def make_choice(request, player_name):
             # player.Active_b += 20
             # player.save()
     except Active.DoesNotExist:
+        day = list(Admin.objects.all())[-1:][0].Day
         player = Player.objects.get(Name=player_name)
         # player.save()
         players = Player.objects.order_by('-Active_a').order_by('-Active_b')
-        actives = Active.objects.all()[:player.Day + 2]
+        actives = Active.objects.all()[:day + 2]
     except:
         raise Http404('Что-то пошло не так в make_chio')
     return render(request, "player/mainWindow.html", {'player': player, 'players': players,
@@ -148,9 +150,13 @@ def next_day(request):
     return None
 
 
-def next_day_admin(request, year):
+repository = [None]
+
+
+def next_day_admin(request, year, repo=repository):
     try:
         day = list(Admin.objects.all())[-1:][0].Day
+        day1 = day
         Admin.objects.all().delete()
         user_factors = Factor.objects.filter(Day=day)
         players = Player.objects.all()
@@ -167,6 +173,29 @@ def next_day_admin(request, year):
             new_day = Admin(Day=day + 1)
         new_day.save()
         day = new_day.Day
+
+        # now make calculations:
+        if int(year) != 1000:
+            k = sorted(user_factors, key=lambda x: x.UserID.ID)
+            print(repo)
+            if repo[0] is None:
+                repo[0] = Repository([i.UserID.ID for i in k])
+            game1 = repo[0]
+            game1.choice(day1,
+                         [i.Name1.Name_eng for i in k],
+                         [i.Name2.Name_eng for i in k]
+                         )
+            ar = game1.gamble(day1)
+            i = 0
+            actA = 'asset_1_' + str(day1)
+            actB = 'asset_2_' + str(day1)
+            for a, b in ar[[actA, actB]].to_numpy():
+                user = k[i].UserID
+                user.NextYear(a.round(), b.round())
+                user.save()
+                i += 1
+
+
     except:
         raise Http404('Что-то пошло не так в to Main menue')
     return render(request, "player/AdminPage.html", {'user_factors': user_factors, 'actives': actives,
@@ -175,7 +204,7 @@ def next_day_admin(request, year):
 
 def to_admin_page(request):
     try:
-        day = 1
+        day = list(Admin.objects.all())[-1:][0].Day
         user_factors = Factor.objects.filter(Day=day)
         players = Player.objects.all()
         actives = Active.objects.all() # todo допилить админскую страничку

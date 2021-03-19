@@ -13,6 +13,10 @@ class Repository(object):
 
         self.data = data
 
+    def obrasovanie(self, asset, vanilla_dohod=0.02):
+
+        return (1 + vanilla_dohod) * asset
+
     def bank(self, asset,  # актив
              vanilla_dohod=0.06  # доход в банке
              ):
@@ -40,7 +44,7 @@ class Repository(object):
     def human(self, asset,  # актив игрока
               choice):  # выбор игрока в годе n
 
-        dt = {"bank": self.bank, "sosed": self.sosed}  # словарь из возможных опций для инвестирования
+        dt = {"bank": self.bank, "startap": self.sosed, "obrasovanie": self.obrasovanie}  # словарь из возможных опций для инвестирования
 
         return dt[choice](asset)
 

@@ -64,19 +64,33 @@ print(Factor.objects.all())
 # user_factors = Factor(Name1=act[0], Name2=act[1], Day=1, UserID=pla[0])
 # user_factors.save()
 # pla.delete()
-print(Factor.objects.all())
+aa = Factor.objects.all()
+k = sorted(aa, key=lambda x: x.UserID.ID)
+print([i.Name1.Name_eng for i in k])
+# print(sorted([i.UserID.ID for i in a]))
 # print(pla)
 # a = pla[0]
 # print(a.ID)
 # print([i.ID for i in pla])
-# game1 = Repository([i.ID for i in pla])
+# game1 = Repository([i.UserID.ID for i in k])
 # game1.choice(1,
-#            ["bank","bank","sosed"],
-#            ["bank","sosed","sosed"]
+#            [i.Name1.Name_eng for i in k],
+#            [i.Name2.Name_eng for i in k]
 #            )
-# print(game1.gamble(1))
+# ar = game1.gamble(1)
+# actA = ar['asset_1_1']
+# actB = ar['asset_2_1']
+# print(ar[['asset_1_1','asset_2_1']])
+# i = 0
+# for a, b in ar[['asset_1_1','asset_2_1']].to_numpy():
+#     user = k[i].UserID
+#     user.NextYear(a.round(), b.round())
+#     # user.save()
+#     i += 1
 a = list(Admin.objects.all())
 # Admin.objects.all().delete()
 # aa = Admin(Day=1)
 # aa.save()
-print(a)
+# for i in aa[4:]:
+#     i.delete()
+print(aa)

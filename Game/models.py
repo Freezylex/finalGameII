@@ -22,9 +22,12 @@ class Player(models.Model):
     def current(self, day):
         return day == self.Day   # текущий день. Возможно, можно поставить и день - 1
 
-    def NextYear(self):
+    def NextYear(self, a, b):
         self.Day += 1
-        # TODO add more functionality
+        self.Active_a_pred = self.Active_a
+        self.Active_b_pred = self.Active_b
+        self.Active_a = a
+        self.Active_b = b
 
     def percentage_increase_active_a(self):
         return ((self.Active_a_pred - self.Active_a) / self.Active_a) * 100
