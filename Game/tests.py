@@ -46,4 +46,32 @@ import numpy as np
 #     act.save()
 # print(Active.objects.all())
 
-print(Admin.objects.all()[0].Day)
+# print(Admin.objects.all()[0].Day)
+print(Factor.objects.all())
+# game_1 = Repository(np.arange(1,4,1))
+# print(game_1.data)
+# game_1.choice(1,
+#            ["bank","bank","sosed"],
+#            ["bank","sosed","sosed"]
+#            )
+
+# pla = Player.objects.all()
+# act = Active.objects.all()
+# pla.delete()
+# fact = Factor.objects.all()
+# fact.delete()
+# print(act)
+# user_factors = Factor(Name1=act[0], Name2=act[1], Day=1, UserID=pla[0])
+# user_factors.save()
+# pla.delete()
+print(Factor.objects.all())
+# print(pla)
+# a = pla[0]
+# print(a.ID)
+# print([i.ID for i in pla])
+# game1 = Repository([i.ID for i in pla])
+# game1.choice(1,
+#            ["bank","bank","sosed"],
+#            ["bank","sosed","sosed"]
+#            )
+# print(game1.gamble(1))

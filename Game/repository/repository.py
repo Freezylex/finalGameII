@@ -109,4 +109,10 @@ game_1.choice(1,
            ["bank","sosed","sosed"]
            )
 
-print(game_1.gamble(1))
+# print(game_1.gamble(1))
+
+
+# repo = Repository(np.arange(1, 4, 2))
+# print(np.arange(1, 4, 1))
+
+# player = Player?

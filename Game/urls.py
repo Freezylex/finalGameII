@@ -12,4 +12,5 @@ urlpatterns = [
     path('adminPage/', views.to_admin_page, name='to_admin_page'),
     path('testic/<str:play>/', views.next_step, name='next_step'),
     path('testic1/<str:player_name>/', views.make_choice, name='make_choice'),
+    path('adminPage/<int:year>/', views.next_day_admin, name='next_day_admin'),
 ]

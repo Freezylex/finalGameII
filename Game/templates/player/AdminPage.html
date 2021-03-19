@@ -11,58 +11,75 @@
           integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
     <link rel="stylesheet" href="../../static/css/style.css">
     <title>Admin Page</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 </head>
 <body>
 <h3 class="lead heading">Админ</h3>
 <table class="table">
     <tr>
         <td>Текущий год:</td>
-        <td>2</td>
+        <td>{{ day }}</td>
     </tr>
     <tr>
         <td colspan="2">
-            <button class="btn btn-dark button1" onclick="alert('plus year')">Следующий год</button>
+            <form action="{% url 'user_page:next_day_admin' day %}" method="post">
+
+                {% csrf_token %}
+
+                <button class="btn btn-dark button1">Следующий год</button>
+
+            </form>
+
+        </td>
+                <td colspan="2">
+            <form action="{% url 'user_page:next_day_admin' 0 %}" method="post">
+
+                {% csrf_token %}
+
+                <button class="btn btn-dark button1">Предыдущий год</button>
+
+            </form>
+
         </td>
     </tr>
 </table>
 <h4 class="lead heading">Топ игроков</h4>
 
-<table class="table">
+<table class="table tb">
+    <thead>
     <tr>
         <th scope="col">#</th>
         <th scope="col">Имя</th>
         <th scope="col">Капитал</th>
     </tr>
+    </thead>
+<tbody>
+{% if players %}
+    {% for i in players %}
     <tr>
-        <th scope="row">1</th>
+        <th scope="row"></th>
         <td>
-            <form action="{% url 'user_page:next_step' %}" method="post">
+            <form action="{% url 'user_page:next_step' i.Name %}" method="post">
 
                 {% csrf_token %}
 
-                <button style="background-color: transparent; border: none;">Иван Юсупов</button>
+                <button style="background-color: transparent; border: none;">{{ i.Name }}</button>
 
             </form>
         </td>
-        <td>280 (+40%)</td>
+        <td>{{ i.SumActive }} (+40%)</td>
     </tr>
-    <tr>
-        <th scope="row">2</th>
-        <td>Аглай Матрёшкин</td>
-        <td>280 (+40%)</td>
-    </tr>
-    <tr>
-        <th scope="row">3</th>
-        <td>Инвестор 5674</td>
-        <td>280 (+40%)</td>
-    </tr>
-    <tr>
-        <th scope="row">4</th>
-        <td>Сын маминой подр...</td>
-        <td>280 (+40%)</td>
-    </tr>
+    {% endfor %}
+{% endif %}
+</tbody>
 </table>
 <!-- Optional JavaScript -->
+<script>
+$('.tb tbody tr').each(function(i) {
+var number = i + 1;
+$(this).find('th:first').text(number+".");
+});
+</script>
 <!-- jQuery first, then Popper.js, then Bootstrap JS -->
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
         integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"

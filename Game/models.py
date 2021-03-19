@@ -3,6 +3,7 @@ import csv,sys,os
 import django
 
 class Player(models.Model):
+    ID = models.IntegerField(auto_created=True, unique=True)
     Name = models.CharField('name', max_length=200, primary_key=True, unique=True, null=False)
     Active_a = models.FloatField('active_a', default=100, null=False)
     Active_a_pred = models.FloatField('active_a', default=100, null=False)
