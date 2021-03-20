@@ -7,7 +7,7 @@ from django.urls import reverse
 
 from django.shortcuts import render
 from .models import Player, Active, Factor, Admin
-from Game.repository.repository import Repository
+from Game.repository.repository import Repository, Factory
 import numpy as np
 
 # game_1 = Repository(np.arange(1,4,1))
@@ -150,11 +150,12 @@ def next_day(request):
     return None
 
 
-repository = [None]
+factory = Factory()
 
 
-def next_day_admin(request, year, repo=repository):
+def next_day_admin(request, year):
     try:
+        flag = True
         day = list(Admin.objects.all())[-1:][0].Day
         day1 = day
         Admin.objects.all().delete()
@@ -177,20 +178,50 @@ def next_day_admin(request, year, repo=repository):
         # now make calculations:
         if int(year) != 1000:
             k = sorted(user_factors, key=lambda x: x.UserID.ID)
-            print(repo)
-            if repo[0] is None:
-                repo[0] = Repository([i.UserID.ID for i in k])
-            game1 = repo[0]
-            game1.choice(day1,
-                         [i.Name1.Name_eng for i in k],
-                         [i.Name2.Name_eng for i in k]
-                         )
-            ar = game1.gamble(day1)
+            idshniki = [i.UserID.ID for i in k]
+            game1 = factory.get_repository(idshniki)
+            if len(idshniki) < len(game1.id_):
+                flag = False
+                p = game1.id_
+                list_of_actives_a = []
+                list_of_actives_b = []
+                dict_k = {el.UserID.ID: el for el in k}
+                k = []
+                for i in game1.id_:
+                    k.append(Player.objects.get(ID__exact=i))
+                    if i in dict_k:
+                        elem = dict_k[i]
+                        list_of_actives_a.append(elem.Name1.Name_eng)
+                        list_of_actives_b.append(elem.Name2.Name_eng)
+                    else:
+                        list_of_actives_a.append('bank')
+                        list_of_actives_b.append('bank')
+
+                ch = game1.Choice(day1,
+                                  list_of_actives_a,
+                                  list_of_actives_b
+                             )
+            else:
+                a = [i.Name1.Name_eng for i in k]
+                b = [i.Name2.Name_eng for i in k]
+                print(b)
+                print(game1.id_)
+                print(day1)
+                ch = game1.Choice(day1,
+                             [i.Name1.Name_eng for i in k],
+                             [i.Name2.Name_eng for i in k]
+                             )
+                print(ch)
+            print('sdf')
+            ar = game1.Gamble(day1)
+            print('fdsf')
             i = 0
             actA = 'asset_1_' + str(day1)
             actB = 'asset_2_' + str(day1)
             for a, b in ar[[actA, actB]].to_numpy():
-                user = k[i].UserID
+                user = k[i]
+                if flag:
+                    user = user.UserID
                 user.NextYear(a.round(), b.round())
                 user.save()
                 i += 1

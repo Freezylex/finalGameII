@@ -13,7 +13,7 @@ os.environ['DJANGO_SETTINGS_MODULE'] = 'settings'
 import django
 django.setup()
 from Game.models import Player, Active, Factor, Admin
-from Game.repository.repository import Repository
+from Game.repository.repository import Repository, Factory
 import numpy as np
 
 # player = Player(Name='Aleks 120')
@@ -87,10 +87,19 @@ print([i.Name1.Name_eng for i in k])
 #     user.NextYear(a.round(), b.round())
 #     # user.save()
 #     i += 1
-a = list(Admin.objects.all())
+# a = list(Admin.objects.all())
 # Admin.objects.all().delete()
 # aa = Admin(Day=1)
 # aa.save()
 # for i in aa[4:]:
 #     i.delete()
+aa = Factor.objects.all()
 print(aa)
+j = Repository(list(range(4)))
+df = j.Choice(1,
+    ['sosed', 'bank', 'education', 'sosed'],
+    ['bank', 'sosed',  'education', 'sosed']
+)
+print(df)
+dr = j.Gamble(1)
+print(dr)
