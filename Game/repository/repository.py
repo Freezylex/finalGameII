@@ -37,7 +37,6 @@ class Repository:
 
         '''ЭТУ ФУНКЦИЮ МОЖНО БУДЕТ ИЗМЕНЯТЬ В ЗАВИСИМОСТИ ОТ ХАРАКТЕРА ПРИНИМАЕМЫХ ДАННЫХ ПО ВЫБОРУ АКТИВА'''
 
-        return self.data
 
     def Gamble(self, year):  # номер года
 
@@ -75,7 +74,6 @@ class Repository:
         self.data.loc[:, "educ"] += self.data.loc[:, "educ_nakop"]
         self.data["educ_nakop"] = 0
         self.data["TOTAL"] = self.data[asset_1_is] + self.data[asset_2_is]
-        return self.data
 
 
 # %%
@@ -250,7 +248,16 @@ print(b)
 # print(game_1.gamble(1))
 
 
-repo = Repository(np.arange(1, 4, 2))
+repo = Repository([1])
+repo.Choice(1, ['education'], ['education'])
+a = repo.Gamble(1)
+print(repo.data)
 # print(np.arange(1, 4, 1))
-
+# print(repo.data)
 # player = Player?
+# day1 = 0
+# act_a = 'asset_1_' + str(day1)
+# act_b = 'asset_2_' + str(day1)
+# for a, b, c in repo.data[[act_a, act_b, 'educ']].to_numpy():
+#     print(a, b, c)
+

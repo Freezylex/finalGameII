@@ -25,19 +25,19 @@
         <th>Актив Б <br> {{ player.Active_b }} ({{ player.percentage_increase_active_b }}%)</th>
     </tr>
 </table>
-<p class="heading"><sup>Общий объем: 240 (+ 20%)</sup></p>
+<p class="heading"><sup>Общий объем: {{ player.SumActive }} ({{ player.SumActive_percentage_increase }}%)</sup></p>
 <table class="table">
     <tr>
         <td>Пассивный % по образованию:</td>
-        <td>0%</td>
+        <td>{{ player.Education }} %</td>
     </tr>
     <tr>
         <td>Текущий год:</td>
-        <td>2</td>
+        <td>{{ player.Day }}</td>
     </tr>
     <tr>
         <td>Текущее место в топе:</td>
-        <td>14</td>
+        <td>{{ rating }}</td>
     </tr>
 </table>
 <h4 class="lead heading">Доходность активов за второй год</h4>

@@ -93,13 +93,43 @@ print([i.Name1.Name_eng for i in k])
 # aa.save()
 # for i in aa[4:]:
 #     i.delete()
-aa = Factor.objects.all()
-print(aa)
-j = Repository(list(range(4)))
-df = j.Choice(1,
-    ['sosed', 'bank', 'education', 'sosed'],
-    ['bank', 'sosed',  'education', 'sosed']
-)
-print(df)
-dr = j.Gamble(1)
-print(dr)
+# aa = Factor.objects.all()
+# print(aa)
+# j = Repository(list(range(4)))
+# df = j.Choice(1,
+#     ['sosed', 'bank', 'education', 'sosed'],
+#     ['bank', 'sosed',  'education', 'sosed']
+# )
+# print(df)
+# dr = j.Gamble(1)
+# print(dr)
+a = Player.objects.filter(Name__startswith='Николай')
+for i in a:
+    print(i.Active_a)
+    print(i.Active_a_pred)
+    print(i.percentage_increase_active_a())
+    i.Active_a_pred = 100
+    i.Active_a = 100
+    i.Active_b_pred = 100
+    i.Active_b = 100
+    i.Day = 2
+    i.save()
+
+
+f = Factory()
+a = f.get_repository(id_=[1, 2])
+a.Choice(1, ['bank', 'bank'], ['bank', 'bank'])
+a.Gamble(1)
+print(a.data)
+print('st')
+ii = 1
+choices = []
+for i in a.data[a.data.index.isin([2])][a.data.columns[5:]].T[2]:
+    choices.append(f'year{ii}')
+    choices.append(f'')
+
+
+
+
+# Admin(Day=1).save()
+# print(Admin.objects.all())

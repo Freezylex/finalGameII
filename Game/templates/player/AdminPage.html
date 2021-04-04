@@ -31,7 +31,7 @@
             </form>
 
         </td>
-                <td colspan="2">
+        <td colspan="2">
             <form action="{% url 'user_page:next_day_admin' 1000 %}" method="post">
 
                 {% csrf_token %}
@@ -41,6 +41,41 @@
             </form>
 
         </td>
+        <td colspan="2">
+
+            <form action="{% url 'user_page:next_day_admin' 400 %}" method="post">
+
+                {% csrf_token %}
+
+                <button class="btn btn-dark button1">Обнулить всем активы и года</button>
+
+            </form>
+
+        </td>
+        <td colspan="2">
+
+            <form action="{% url 'user_page:next_day_admin' 500 %}" method="post">
+
+                {% csrf_token %}
+
+                <button class="btn btn-dark button1">Удалить всех юзеров</button>
+
+            </form>
+
+        </td>
+        <td colspan="2">
+
+            <form action="{% url 'user_page:next_day_admin' 600 %}" method="post">
+
+                {% csrf_token %}
+
+                <button class="btn btn-dark button1">Добавить тестовых юзеров</button>
+
+            </form>
+
+        </td>
+
+
     </tr>
 </table>
 <h4 class="lead heading">Топ игроков</h4>
@@ -67,7 +102,7 @@
 
             </form>
         </td>
-        <td>{{ i.SumActive }} (+40%)</td>
+        <td>{{ i.SumActive }} ({{ i.SumActive_percentage_increase }} %)</td>
     </tr>
     {% endfor %}
 {% endif %}

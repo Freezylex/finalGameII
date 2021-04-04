@@ -30,14 +30,14 @@ class Player(models.Model):
         self.Active_b = b
 
     def percentage_increase_active_a(self):
-        return ((self.Active_a_pred - self.Active_a) / self.Active_a) * 100
+        return round(((-self.Active_a_pred + self.Active_a) / self.Active_a_pred) * 100, 2)
 
     def percentage_increase_active_b(self):
-        return ((self.Active_b_pred - self.Active_b) / self.Active_b) * 100
+        return round(((-self.Active_b_pred + self.Active_b) / self.Active_b_pred) * 100, 2)
 
     def education(self):
         if self.Education == 0:
-            return 'Образование на 0. Вы пока тупой, зато с деньгами)'
+            return 'Необразованность. Тип: 0 из бесконечности'
         elif self.Education == 1:
             return 'Образование 1. Вы закончили 4 класса образования. Очень неплохо. '
         elif self.Education > 1 & self.Education < 3:
@@ -47,6 +47,23 @@ class Player(models.Model):
 
     def SumActive(self):
         return self.Active_a + self.Active_b
+
+    def SumActive_percentage_increase(self):
+        res = (self.Active_a + self.Active_b - self.Active_a_pred - self.Active_b_pred) / (self.Active_a_pred + self.Active_b_pred)
+        if res >= 0:
+            output = f"+ {round(100 * res, 2)}"
+        else:
+            output = f"{round(100 * res, 2)}"
+        return output
+
+    def obnulit(self):
+        self.Day = 1
+        self.Active_a_pred = 100
+        self.Active_a = 100
+        self.Active_b = 100
+        self.Active_b_pred = 100
+        self.Education = 0
+        return 1
 
 
 
