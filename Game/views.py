@@ -98,7 +98,7 @@ def next_step(request, play):
     return render(request, "player/Personal Page.html", {'player': player, 'players': players, 'rating': rating})
 
 
-def make_choice(request, player_name):
+def make_choice(request, player_name):  # игроком нажата клавиша (следующий ход)
     try:
         player = Player.objects.get(Name=player_name)
         day = list(Admin.objects.all())[-1:][0].Day
@@ -118,10 +118,10 @@ def make_choice(request, player_name):
             # print('we are here')
             factor = Factor.objects.filter(Day=day, UserID=player)
             if len(factor) != 0:
-                print(factor)
+                # print(factor)
                 factor.delete()
                 # print('factors deleted')
-                print(Factor.objects.all())
+                # print(Factor.objects.all())
             user_factors.save()
             # player.NextYear()
             # player.Active_a += 220
