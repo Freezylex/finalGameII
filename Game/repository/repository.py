@@ -10,44 +10,222 @@ class Factory:
         self.repo = self.repo or Repository(id_)
         return self.repo
 
+import pandas as pd
+import numpy as np
+
+
+class InvestingOptions:
+    '''
+    Класс для реализации различных инвестиционных возможностей в игре. Почти все активы строятся одинаковым образом:
+    на вход подаются индексы игроков, сумма в предыдущий год по данному активу, колонка для инициализации результата
+    инвестирования в инструмент.
+    '''
+
+    def __init__(self, df: pd.DataFrame, year: int, educ_dohod: float,
+                 inflation_rate: float, number_only: float,
+                 number_together: float):
+        self.data = df #датафрейм с информацией по текущей игре
+        self.choice_1 = "year_" + str(year) + '_1'
+        self.choice_2 = "year_" + str(year) + '_2'
+        self.prev_money_1 = 'asset_' + str(year - 1) + '_1'
+        self.prev_money_2 = 'asset_' + str(year - 1) + '_1'
+        self.future_money_1 = 'asset_' + str(year) + '_1'
+        self.future_money_2 = 'asset_' + str(year) + '_2'
+        self.educ = educ_dohod
+        self.inflat = inflation_rate
+        self.stock_only_ratio = number_only #коэффициент участников для акции с отрицательной бетой
+        self.stock_together_ratio = number_together #коэффициент участников для акции роста
+        self.year = year
+
+    def bank(self, indexes,
+             mon_fut, mon_prev, flag=0):
+        '''
+
+        Реализация инвествыбора "вложение в банк".
+        ВАЖНО!!!! ПОСЛЕДУЮЩИЕ ФУНКЦИИ РАБОТАЮТ ПО ТАКОМУ ЖЕ ПРИНЦИПУ
+
+        :param indexes: индексы игроков, которые выбрали банк - np.array
+        :param mon_fut: колонка, куда будет начислена сумма по результатам инвестирования - str
+        :param mon_prev: колонка, откуда будет взята сумма по результатам прошлых инвестирований - str
+        :param flag: по дефолту 0 - для дополнительного дохода от образования необходимо поставить 1
+        :return: self
+        '''
+        self.data.loc[indexes, mon_fut] = self.data.loc[indexes, mon_prev] * (
+                    1 + self.inflat + 0.005 + self.educ * flag)
+        return self
+
+    def korp_bond(self, indexes,
+                  mon_fut, mon_prev, flag=0):
+        self.data.loc[indexes, mon_fut] = self.data.loc[indexes, mon_prev] * (
+                    1 + self.inflat + 0.025 + self.educ * flag)
+        return self
+
+    def gov_bond(self, indexes, mon_fut,
+                 mon_prev, flag=0):
+        self.data.loc[indexes, mon_fut] = self.data.loc[indexes, mon_prev] * (1 + self.inflat + 0.01 + self.educ * flag)
+        return self
+
+    def education(self, indexes, mon_fut, mon_prev):
+        self.data.loc[indexes, 'educ'] = 1
+        self.data.loc[indexes, mon_fut] = self.data.loc[indexes, mon_prev]
+        return self
+
+    def stock_together(self, indexes, mon_fut,
+                       mon_prev, flag=0):
+        if 0 < self.stock_together_ratio < 0.1:
+            market_premium = self.inflat + 0.03 + flag * self.educ
+        elif 0.1 <= self.stock_together_ratio < 0.2:
+            market_premium = self.inflat + 0.05 + flag * self.educ
+        elif 0.2 <= self.stock_together_ratio < 0.4:
+            market_premium = self.inflat + 0.07 + flag * self.educ
+        elif 0.4 <= self.stock_together_ratio < 0.6:
+            market_premium = self.inflat + 0.09 + flag * self.educ
+        else:
+            market_premium = self.inflat - 0.03 + flag * self.educ
+        self.data.loc[indexes, mon_fut] = self.data.loc[indexes, mon_prev](1 + market_premium)
+        return self
+
+    def stock_only(self, indexes, mon_fut, mon_prev, flag=0):
+        if 0 < self.stock_together_ratio < 0.1:
+            market_premium = self.inflat + 0.09 + flag * self.educ
+        elif 0.1 <= self.stock_together_ratio < 0.2:
+            market_premium = self.inflat + 0.07 + flag * self.educ
+        elif 0.2 <= self.stock_together_ratio < 0.4:
+            market_premium = self.inflat + 0.03 + flag * self.educ
+        elif 0.4 <= self.stock_together_ratio < 0.6:
+            market_premium = self.inflat + 0.01 + flag * self.educ
+        else:
+            market_premium = self.inflat - 0.01 + flag * self.educ
+        self.data.loc[indexes, mon_fut] = self.data.loc[indexes, mon_prev](1 + market_premium)
+        return self
+
+    def stock_index(self, indexes, mon_fut, mon_prev, flag=0):
+        expected_return = 1 + self.inflat + 0.045 + 0.025 + flag * self.educ
+        '''
+        4,5% взяты были из корпов (если менять там, то менять и тут), еще 2.5 - премия
+        '''
+        scale = 0.01
+        vector_of_returns = np.random.normal(loc=expected_return, scale=scale, size=len(indexes))
+        self.data.loc[indexes, mon_fut] = self.data.loc[indexes, mon_prev] * vector_of_returns
+        return self
+
+    def sosed(self, indexes, mon_fut,
+              mon_prev,
+              default_prob=0.6, loose=0.2, flag=0):
+        dohod_sosed = self.inflat + 0.12 + flag * self.educ
+        outcomes = np.random.binomial(1, default_prob, size=len(indexes))  # 1 - дефолт, 0 - успех
+        good_outcomes = np.ones(shape=len(outcomes)) - outcomes
+        pr_mon = self.data.loc[indexes, mon_prev]  # деньги с предыдущего года
+        this_year = pr_mon * (np.ones(shape=len(indexes)) - loose * outcomes + dohod_sosed * good_outcomes)
+        self.data.loc[indexes, mon_fut] = this_year
+        return self
+
+    def _return_bool_flag(self):
+        '''
+        Изначально функция была написана для того, чтобы флаг не менялся в зависимости от порядка
+        вложения в актив (например, если education был выбран в качестве первого актива, то повторный вызов
+        accrue привел бы к увеличению доходности
+
+        :return: булевское значение для того, чтобы можно было начислять допдоход по образованию
+        '''
+        if self.year == 1:
+            return 0
+        return 1
+
+    def _accrue_money_(self, year_column, prev_money, fut_money):
+        '''
+        Проход по всем функциям и начисление.
+
+        !!!!!!!!!ПОКА НЕЯСНО КАК СРАВНИВАТЬ NaN - у меня пандас отказывается сравнивать np.nan, полученный
+        на вход в датафрейм с nan
+        !!!!!!!
+
+        :param year_column: колонка, где находятся выборы участников в этот год - str
+        :param prev_money: колонка, откуда будет взята сумма по результатам прошлых инвестирований - str
+        :param fut_money: колонка, куда будет начислена сумма по результатам инвестирования - str
+        :return: self
+        '''
+        opportunities = self.data[year_column].unique()
+        option_dict = {'bank': self.bank, 'sosed': self.sosed,
+                       'korp_bond': self.korp_bond,
+                       'gov_bond': self.gov_bond,
+                       'stock_together': self.stock_together,
+                       'stock_only': self.stock_only,
+                       'stock_index': self.stock_index}
+        bool_flag = self._return_bool_flag()
+        for option in opportunities:
+            players_with_educ = self.data[(self.data['educ'] != 0) & (self.data[year_column] == option)].index
+            players_without_educ = self.data[(self.data['educ'] == 0) & (self.data[year_column] == option)].index
+            if option == 'education':
+                ind_for_ed = self.data[self.data[year_column] == 'education'].index
+                self.education(ind_for_ed, fut_money, prev_money)
+                continue
+            try:
+                option_dict[option](players_with_educ, fut_money, prev_money, flag=bool_flag)
+                option_dict[option](players_without_educ, fut_money, prev_money)
+            except:
+                self.bank(players_with_educ, fut_money, prev_money)
+                self.bank(players_without_educ, fut_money, prev_money)
+        return self
+
+    def accrue(self):
+        '''
+
+        Проход по инвестиционным опциям и начисление доходности для всех игроков
+
+        :return: pd.DataFrame - итоговый датафрейм после 1 года игры.
+        '''
+        self._accrue_money_(self.choice_1, self.prev_money_1, self.future_money_1)
+        self._accrue_money_(self.choice_2, self.prev_money_2, self.future_money_2)
+        return self.data
+
+
 class Repository:
-    def __init__(self, id_):
+
+    def __init__(self, id_, inflation_rate=0.05, educ_dohod=0.01):
+        '''
+
+        Базовое правило в названии колонок: сначала ГОД, потом номер актива
+
+        :param id_: айдишники игроков
+        :param inflation_rate: базовая цифра, от которой отталкиваются дальнейшие проценты - уровень инфляции
+        '''
         id_ = np.array(id_)
         self.id_ = id_
         data = pd.DataFrame({"id": id_})  # инициализация id
         data["TOTAL"] = 200
         data["educ"] = 0
         data["educ_nakop"] = 0
-        data["asset_1_0"] = 100  # инициализация актива 1
-        data["asset_2_0"] = 100  # инициализация актива 2
+        data["asset_0_1"] = 100  # инициализация актива 1
+        data["asset_0_2"] = 100  # инициализация актива 2
         data = data.set_index("id")  # смена индекса на id
 
         self.data = data
+        self.inflation = inflation_rate
+        self.educ_dohod = educ_dohod
 
     def Choice(self,
                year,  # номер года
                asset_1_choice,  # список из выборов игроков касательно инвестиций актива 1
                asset_2_choice  # список из выборов игроков касательно инвестиций актива 2
                ):
-        year_1 = "year_1_" + str(year)  # название колонки с выборами касательно актива 1
-        year_2 = "year_2_" + str(year)  # название колонки с выборами касательно актива 2
+        year_1 = "year_" + str(year) + '_1'  # название колонки с выборами касательно актива 1
+        year_2 = "year_" + str(year) + '_2'  # название колонки с выборами касательно актива 2
 
         self.data[year_1] = asset_1_choice
         self.data[year_2] = asset_2_choice
 
         '''ЭТУ ФУНКЦИЮ МОЖНО БУДЕТ ИЗМЕНЯТЬ В ЗАВИСИМОСТИ ОТ ХАРАКТЕРА ПРИНИМАЕМЫХ ДАННЫХ ПО ВЫБОРУ АКТИВА'''
-
+        ''' я не понял зачем нам тут это, но ладно, оставлю (комментарий от меня)'''
+        return self.data
 
     def Gamble(self, year):  # номер года
 
-        asset_1_was = "asset_1_" + str(year - 1)  # получаем тикер актива 1, который подается на вход
-        asset_2_was = "asset_2_" + str(year - 1)  # получаем тикер актива 2, который подается на вход
+        asset_1_is = "asset_" + str(year) + '_1'  # получаем тикер актива 1, который подается на выход
+        asset_2_is = "asset_" + str(year) + '_2'  # получаем тикер актива 2, который подается на выход
 
-        asset_1_is = "asset_1_" + str(year)  # получаем тикер актива 1, который подается на выход
-        asset_2_is = "asset_2_" + str(year)  # получаем тикер актива 2, который подается на выход
-
-        choice_1 = "year_1_" + str(year)  # получаем тикер выбора инвестиции актива 1
-        choice_2 = "year_2_" + str(year)  # получаем тикер выбора инвестиции актива 2
+        choice_1 = "year_" + str(year) + '_1'  # получаем тикер выбора инвестиции актива 1
+        choice_2 = "year_" + str(year) + '_2'  # получаем тикер выбора инвестиции актива 2
 
         self.data[asset_1_is] = 0  # иницциализация нового значения актива 1 нулем
         self.data[asset_2_is] = 0  # иницциализация нового значения актива 2 нулем
@@ -58,206 +236,22 @@ class Repository:
         N_only = self.data[self.data[choice_1] == "stock_only"][choice_1].count()
         N_only += self.data[self.data[choice_2] == "stock_only"][choice_2].count()
 
-        for index, row in self.data.iterrows():  # цикл, потому что игроков мало -> будет быстро
-
-            '''ДОБАВИТЬ ЗАЩИТУ ОТ СЛУЧЧАЕВ, КОГДА ИГРОК НИЧЕГО НЕ ВЫБРАЛ (ТОГДА ВСЕ ДЕНЬГИ ИДУТ В БАНК)'''
-            # без защиты код сломается
-
-            result_1 = human(row[asset_1_was], row[choice_1], self.data, index, N_together,
-                             N_only)  # считаем новую стоимость актива 1
-            result_2 = human(row[asset_2_was], row[choice_2], self.data, index, N_together,
-                             N_only)  # считаем новую стоимость актива 2
-
-            self.data.loc[index, asset_1_is] = result_1  # обновляем актив 1 в новой колонке
-            self.data.loc[index, asset_2_is] = result_2  # обновляем актив 2 в новой колонке
-
-        self.data.loc[:, "educ"] += self.data.loc[:, "educ_nakop"]
-        self.data["educ_nakop"] = 0
+        gambling = InvestingOptions(self.data, year, educ_dohod=self.educ_dohod,
+                                    inflation_rate=self.inflation,
+                                    number_only=N_only / len(self.data),
+                                    number_together=N_together / len(self.data))
+        new_data = gambling.accrue()
+        self.data = new_data
         self.data["TOTAL"] = self.data[asset_1_is] + self.data[asset_2_is]
+        return self.data
 
+a = Factory()
 
-# %%
-
-def human(asset,  # актив игрока
-          choice,  # выбор игрока по 1 активу
-          data,  # наш датафрейм self.data
-          idx,  # имя игрока
-          N_together,
-          N_only
-          ):
-    dt = {"bank": bank, "sosed": sosed, "education": education,
-          "korp_bond": korp_bond, "gov_bond": gov_bond, "stock_together": stock_together,
-          "stock_only": stock_only}
-    # словарь из возможных опций для инвестирования
-
-    return dt[choice](asset, data, idx, N_together, N_only)
-
-
-# %%
-
-educ_dohod = 0.01
-
-
-def bank(asset,  # актив
-         data,  # наш основной датафрейм (self.data)
-         idx,  # имя игрока
-         a,
-         b,
-         vanilla_dohod=0.06,  # доход в банке
-         educ_dohod=educ_dohod  # доход от образования
-         ):
-    # expectation = (1 + vanilla_dohod + data.loc[idx,"educ"] * educ_dohod) * asset
-    # матожидание этой миниигры
-
-    return (1 + vanilla_dohod + data.loc[idx, "educ"] * educ_dohod) * asset
-
-
-def sosed(asset,  # актив
-          data,  # наш основной датафрейм (self.data)
-          idx,  # имя игрока
-          a,
-          b,
-          defolt_prob=0.6,  # вероятность потери средств
-          dohod_sosed=0.15,  # доход инвестиции в соседа
-          lose=0.2,  # какую часть актива игрок потеряет в случае дефолта
-          educ_dohod=educ_dohod  # доход от образования
-          ):
-    # expectation = defolt_prob*(1-lose+data.loc[idx,"educ"]*educ_dohod)*asset + (1-defolt_prob)*(1+dohod_sosed+data.loc[idx,"educ"]*educ_dohod)*asset
-    # матожидание этой миниигры
-
-    if np.random.binomial(1, defolt_prob, 1):
-        return asset * (1 - lose + data.loc[idx, "educ"] * educ_dohod)
-
-    else:
-        return asset * (1 + dohod_sosed + data.loc[idx, "educ"] * educ_dohod)
-
-
-def education(asset,
-              data,
-              idx,  # имя игрока
-              a,
-              b,
-              educ_dohod=educ_dohod
-              ):
-    # expectation = (1+data.loc[idx,"educ"]*educ_dohod)*asset
-    data.loc[idx, "educ_nakop"] += 1
-
-    return asset * (1 + data.loc[idx, "educ"] * educ_dohod)
-
-
-def korp_bond(asset,  # актив
-              data,  # наш основной датафрейм (self.data)
-              idx,  # имя игрока
-              a,
-              b,
-              defolt_prob=0.5,  # вероятность плохого исхода
-              dohod_good=0.1,  # доход при хорошем исходе
-              dohod_bad=0.05,  # доход при плохом исходе
-              educ_dohod=educ_dohod  # доход от образования
-              ):
-    # expectation = defolt_prob*(1+dohod_bad+data.loc[idx,"educ"]*educ_dohod)*asset + (1-defolt_prob)*(1+dohod_good+data.loc[idx,"educ"]*educ_dohod)*asset
-    # матожидание этой миниигры
-    # return expectation
-
-    if np.random.binomial(1, defolt_prob, 1):
-        return asset * (1 + dohod_bad + data.loc[idx, "educ"] * educ_dohod)
-
-    else:
-        return asset * (1 + dohod_good + data.loc[idx, "educ"] * educ_dohod)
-
-
-educ_dohod = 0.01
-
-
-def gov_bond(asset,  # актив
-             data,  # наш основной датафрейм (self.data)
-             idx,  # имя игрока
-             a,
-             b,
-             vanilla_dohod=0.07,  # доход в бонде
-             educ_dohod=educ_dohod  # доход от образования
-             ):
-    # expectation = (1 + vanilla_dohod + data.loc[idx,"educ"] * educ_dohod) * asset
-    # матожидание этой миниигры
-
-    return (1 + vanilla_dohod + data.loc[idx, "educ"] * educ_dohod) * asset
-
-
-def stock_together(asset,  # актив
-                   data,  # наш основной датафрейм (self.data)
-                   idx,  # имя игрока
-                   N_together,
-                   N_only,
-                   vanilla_dohod=0.02,  # доход от дивидендов
-                   educ_dohod=educ_dohod  # доход от образования
-                   ):
-    N = data.shape[0] * 2
-    n = N_together
-
-    if n / N >= 0 and n / N < 0.1:
-        extra_dohod = 0.02
-    elif n / N >= 0.1 and n / N < 0.2:
-        extra_dohod = 0.05
-    elif n / N >= 0.2 and n / N < 0.3:
-        extra_dohod = 0.09
-    elif n / N >= 0.3 and n / N < 0.4:
-        extra_dohod = 0.14
-    else:
-        extra_dohod = 0.2
-
-    return (1 + vanilla_dohod + extra_dohod + data.loc[idx, "educ"] * educ_dohod) * asset
-
-
-def stock_only(asset,  # актив
-               data,  # наш основной датафрейм (self.data)
-               idx,  # имя игрока
-               N_together,
-               N_only,
-               vanilla_dohod=0.02,  # доход от дивидендов
-               educ_dohod=educ_dohod  # доход от образования
-               ):
-    N = data.shape[0] * 2
-    n = N_only
-
-    if n / N >= 0 and n / N < 0.1:
-        extra_dohod = 0.2
-    elif n / N >= 0.1 and n / N < 0.2:
-        extra_dohod = 0.15
-    elif n / N >= 0.2 and n / N < 0.3:
-        extra_dohod = 0.1
-    elif n / N >= 0.3 and n / N < 0.4:
-        extra_dohod = 0.5
-    else:
-        extra_dohod = 0
-
-    return (1 + vanilla_dohod + extra_dohod + data.loc[idx, "educ"] * educ_dohod) * asset
-
-
-
-a = None
-b = 0
-b = Repository(np.arange(1,4,1)) and a and b
-print(b)
-# game_1 = Repository(np.arange(1,4,1))
-# print(game_1.data)
-# game_1.Choice(1,
-#            ["bank","bank","sosed"],
-#            ["bank","sosed","sosed"]
-#            )
-
-# print(game_1.gamble(1))
-
-
-repo = Repository([1])
-repo.Choice(1, ['education'], ['education'])
-a = repo.Gamble(1)
-print(repo.data)
-# print(np.arange(1, 4, 1))
-# print(repo.data)
-# player = Player?
-# day1 = 0
-# act_a = 'asset_1_' + str(day1)
-# act_b = 'asset_2_' + str(day1)
-# for a, b, c in repo.data[[act_a, act_b, 'educ']].to_numpy():
-#     print(a, b, c)
-
+game_1 = a.get_repository(np.arange(1, 4, 1))
+game_1.Choice(1,
+              ["sosed" ,"education",'sosed'],
+              ["bank", "education", "sosed"]
+              )
+game_1.id_
+game_1.Gamble(1)
+print(game_1.data)

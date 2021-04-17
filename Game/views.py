@@ -243,8 +243,8 @@ def next_day_admin(request, year):
                         list_of_actives_a.append(elem.Name1.Name_eng)
                         list_of_actives_b.append(elem.Name2.Name_eng)
                     else:
-                        list_of_actives_a.append('bank')
-                        list_of_actives_b.append('bank')
+                        list_of_actives_a.append('')
+                        list_of_actives_b.append('')
                     #  до этого все строчки про то, как преобразовать в нужный вид полученные данные + для тех, кто не
                     # сделал выбор - деньги по-умолчанию в банке
                 game1.Choice(day1,
@@ -260,15 +260,17 @@ def next_day_admin(request, year):
                                   )
             dataframe = game1.Gamble(day1) # проводим расчёты
             i = 0
-            act_a = 'asset_1_' + str(day1)
-            act_b = 'asset_2_' + str(day1)
-            for a, b in game1.data[[act_a, act_b]].to_numpy():
+            act_a = 'asset_' + str(day1) + '_1'
+            act_b = 'asset_' + str(day1) + '_2'
+            for a, b, c in game1.data[[act_a, act_b, 'educ']].to_numpy():
                 user = k[i]
                 if flag:
                     user = user.UserID # тут просто был  просчет с юзером и идшником
                 user.NextYear(a.round(), b.round())
+                user.Education = c
                 user.save()
                 i += 1
+            players = Player.objects.all()
 
 
 
