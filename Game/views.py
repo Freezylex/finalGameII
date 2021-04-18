@@ -45,6 +45,15 @@ def to_MainWindow(request, player):
 def to_top_players(request, player_nam):
     try:
         player = Player.objects.get(Name=player_nam)
+        day = list(Admin.objects.all())[-1:][0].Day
+        if day == 1:
+            stata = ['Здесь появится статистика по предыдущим годам'] # Перевести стату в репозиторий
+        else:
+            repo = factory.get_repository(1)
+            stata = list(repo.data.iloc[player.ID])
+            factors = Factor.objects.filter(UserID__factor=player.ID) # не хватает истории того, что приносло
+            # какие диведенты
+
         # player.save()
         players = Player.objects.order_by('-Active_a').order_by('-Active_b')
         rating = list(players).index(player) + 1
@@ -65,7 +74,8 @@ def to_top_players(request, player_nam):
 
     except:
         raise Http404('Что-то пошло не так')
-    return render(request, "player/statistica.html", {'player': player, 'players': players, 'rating': rating})
+    return render(request, "player/statistica.html", {'player': player, 'stata': stata,
+                                                      'players': players, 'rating': rating})
 
 
 def to_personal_page(request):
@@ -109,9 +119,9 @@ def make_choice(request, player_name):  # игроком нажата клави
         a = list(dict(request.POST.items()).keys())[1:]
         if len(a) == 2:
             a.sort(key=lambda x: x[0], reverse=True)  # now the first in pair is activeA in russian and etc
-            print(a)
-            print(set([i.Name for i in actives]))
-            print(Factor.objects.all())
+            # print(a)
+            # print(set([i.Name for i in actives]))
+            # print(Factor.objects.all())
             act_a = Active.objects.get(Name__startswith=a[0])
             act_b = Active.objects.get(Name_eng__startswith=a[1])
             user_factors = Factor(Name1=act_a, Name2=act_b, Day=day, UserID=player)
@@ -159,10 +169,13 @@ def next_day(request):
         players = Player.objects.all()
         actves = Active.objects.all()
         for i in user_factors:
-            print(i)
+            pass
+            # print(i)
+
         # сразу же меняем день
         new_day = Admin(Day=day + 1)
         # new_day.save()
+
     except:
         raise Http404('Что-то пошло не так в to Main menue')
     return None
@@ -227,7 +240,8 @@ def next_day_admin(request, year):
             k = sorted(user_factors, key=lambda x: x.UserID.ID)  # отсортируем выборы юзеров по ид (отметим, что
             # выбрали только тех юзеров, которые сделали выбор в данном году)
             idshniki = [i.UserID.ID for i in k]  # чтобы был всегда один и тот же порядок
-            game1 = factory.get_repository(idshniki)  # нициализируем репозиторий только по тем юзерам, которые сделали
+            id_players_sorted = sorted([i.ID for i in list(players)])
+            game1 = factory.get_repository(id_players_sorted)  # нициализируем репозиторий только по тем юзерам, которые сделали
             # первый ход. Те, кто не сделали первых ход в дальнейшем будут игнорироваться. - Это можно пофиксить через
             # репозиторий. Если это не первый год, то вызывается уже существующий репозиторий
             if len(idshniki) < len(game1.id_):
@@ -248,24 +262,24 @@ def next_day_admin(request, year):
                     #  до этого все строчки про то, как преобразовать в нужный вид полученные данные + для тех, кто не
                     # сделал выбор - деньги по-умолчанию в банке
                 game1.Choice(day1,
-                                  list_of_actives_a,
-                                  list_of_actives_b
-                                  )  # делаем выбор
+                             list_of_actives_a,
+                             list_of_actives_b
+                             )  # делаем выбор
             else:
-                a = [i.Name1.Name_eng for i in k] # если количество пользователей одинаково, тогда все проще
+                a = [i.Name1.Name_eng for i in k]  # если количество пользователей одинаково, тогда все проще
                 b = [i.Name2.Name_eng for i in k]
                 game1.Choice(day1,
-                                  [i.Name1.Name_eng for i in k],
-                                  [i.Name2.Name_eng for i in k]
-                                  )
-            dataframe = game1.Gamble(day1) # проводим расчёты
+                             [i.Name1.Name_eng for i in k],
+                             [i.Name2.Name_eng for i in k]
+                             )
+            dataframe = game1.Gamble(day1)  # проводим расчёты
             i = 0
             act_a = 'asset_' + str(day1) + '_1'
             act_b = 'asset_' + str(day1) + '_2'
             for a, b, c in game1.data[[act_a, act_b, 'educ']].to_numpy():
                 user = k[i]
                 if flag:
-                    user = user.UserID # тут просто был  просчет с юзером и идшником
+                    user = user.UserID  # тут просто был  просчет с юзером и идшником
                 user.NextYear(a.round(), b.round())
                 user.Education = c
                 user.save()

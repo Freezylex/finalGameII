@@ -245,6 +245,17 @@ class Repository:
         self.data["TOTAL"] = self.data[asset_1_is] + self.data[asset_2_is]
         return self.data
 
+
+class History():
+    def __init__(self, player, factor, percent_history):
+        self.player = player
+        self.factor = factor
+        self.percent_history = percent_history
+        self.len = []
+    def iter(self):
+        self.len.append(' ')
+
+
 a = Factory()
 
 game_1 = a.get_repository(np.arange(1, 4, 1))
@@ -254,4 +265,5 @@ game_1.Choice(1,
               )
 game_1.id_
 game_1.Gamble(1)
-print(game_1.data)
+print(game_1.data.iloc[1])
+print(list(game_1.data.iloc[1]))
