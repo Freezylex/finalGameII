@@ -45,28 +45,28 @@ def to_MainWindow(request, player):
 def to_top_players(request, player_nam):
     try:
         player = Player.objects.get(Name=player_nam)
-        day = list(Admin.objects.all())[-1:][0].Day
-        if day == 1:
-            stata = ['Здесь появится статистика по предыдущим годам'] # Перевести стату в репозиторий
-        else:
-            repo = factory.get_repository(1)
-            stata = list(repo.data.iloc[player.ID])
-            factors = Factor.objects.filter(UserID__factor=player.ID) # не хватает истории того, что приносло
+        # day = list(Admin.objects.all())[-1:][0].Day
+        # if day == 1:
+        #     stata = ['Здесь появится статистика по предыдущим годам'] # Перевести стату в репозиторий
+        # else:
+        #     repo = factory.get_repository(1)
+        #     stata = list(repo.data.iloc[player.ID])
+        #     factors = Factor.objects.filter(UserID__factor=player.ID) # не хватает истории того, что приносло
             # какие диведенты
 
         # player.save()
         players = Player.objects.order_by('-Active_a').order_by('-Active_b')
         rating = list(players).index(player) + 1
-        user_choices = []
-        if player.Day == 1:
-            user_choices.append('На данном месте появятся резульаты сделанных вами инвестиций')
-        else:
-            data = factory.repo
-            if data:
-                pass
-
-            else:
-                user_choices.append('err in data. repository is not initialised')
+        user_choices = Factor.objects.filter(UserID=player).order_by('Day')
+        # if player.Day == 1:
+        #     user_choices.append('На данном месте появятся резульаты сделанных вами инвестиций')
+        # else:
+        #     data = factory.repo
+        #     if data:
+        #         pass
+        #
+        #     else:
+        #         user_choices.append('err in data. repository is not initialised')
 
 
 
@@ -74,7 +74,7 @@ def to_top_players(request, player_nam):
 
     except:
         raise Http404('Что-то пошло не так')
-    return render(request, "player/statistica.html", {'player': player, 'stata': stata,
+    return render(request, "player/statistica.html", {'player': player, 'user_choices' : user_choices,
                                                       'players': players, 'rating': rating})
 
 
@@ -250,8 +250,10 @@ def next_day_admin(request, year):
                 list_of_actives_b = []
                 dict_k = {el.UserID.ID: el for el in k}
                 k = []
+                default_act = Active.objects.get(Name_eng='bank')
                 for i in game1.id_:
-                    k.append(Player.objects.get(ID__exact=i))
+                    player_ = Player.objects.get(ID__exact=i)
+                    k.append(player_)
                     if i in dict_k:
                         elem = dict_k[i]
                         list_of_actives_a.append(elem.Name1.Name_eng)
@@ -259,6 +261,7 @@ def next_day_admin(request, year):
                     else:
                         list_of_actives_a.append('')
                         list_of_actives_b.append('')
+                        Factor(Day=day1, UserID=player_, Name1=default_act, Name2=default_act).save() # ту логику лучше убрать в репозиторий
                     #  до этого все строчки про то, как преобразовать в нужный вид полученные данные + для тех, кто не
                     # сделал выбор - деньги по-умолчанию в банке
                 game1.Choice(day1,
@@ -302,7 +305,7 @@ def to_admin_page(request):
             day = 1
             Admin(Day=1).save()
         user_factors = Factor.objects.filter(Day=day)
-        players = Player.objects.all()
+        players = Player.objects.order_by('-Active_a').order_by('-Active_b')
         actives = Active.objects.all()  # todo допилить админскую страничку
     except:
         raise Http404('Что-то пошло не так в to_admin_page')

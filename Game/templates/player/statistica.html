@@ -40,37 +40,26 @@
         <td>{{ rating }}</td>
     </tr>
 </table>
-<h4 class="lead heading">Доходность активов за второй год</h4>
 
-<table class="table">
-    <tr>
-        <td>Банк</td>
-        <td>10%</td>
-    </tr>
-    <tr>
-        <td>Стартап соседа</td>
-        <td>Дефолт :D</td>
-    </tr>
-    <tr>
-        <td>Образование</td>
-        <td>1%</td>
-        <td>    </td>
-    </tr>
-</table>
 
-<h4 class="lead heading">Доходность активов за первый год</h4>
+{% if user_choices %}
+    {%  for choice_per_year in user_choices %}
+        <h4 class="lead heading">Доходность активов за {{ choice_per_year.Day }}-й год</h4>
+        <table class="table">
+            <tr>
+                <td>{{ choice_per_year.Name1.Name }}</td>
+                <td>нет данных %</td>
+            </tr>
+            <tr>
+                <td>{{ choice_per_year.Name2.Name }}</td>
+                <td>нет данных%</td>
+            </tr>
+        </table>
+    {% endfor %}
+{% else %}
+    <h4 class="lead heading">Здесь появится статистика по предыдущим годам</h4>
+{% endif %}
 
-<table class="table">
-    <tr>
-        <td>Банк</td>
-        <td>10%</td>
-    </tr>
-    <tr>
-        <td>Образование</td>
-        <td>0%</td>
-        <td>    </td>
-    </tr>
-</table>
 <form action="{%  url 'user_page:to_MainWindow' player.Name%}" method="post">
 
     {% csrf_token %}
