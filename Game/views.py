@@ -209,6 +209,7 @@ def next_day_admin(request, year):
         if int(year) == 500:  # если нажата кнопка удалить всех пользователей
             players = Player.objects.all()  # удаляем пользователей
             players.delete()
+            factory.delete_repo()
             players = Player.objects.all()
             Admin(Day=day1).save()  # день сохраняем текущий
             return render(request, "player/AdminPage.html", {'user_factors': user_factors, 'actives': actives,
@@ -250,7 +251,7 @@ def next_day_admin(request, year):
                 list_of_actives_b = []
                 dict_k = {el.UserID.ID: el for el in k}
                 k = []
-                default_act = Active.objects.get(Name_eng='bank')
+                default_act = Active.objects.get(Name_eng='sosed')
                 for i in game1.id_:
                     player_ = Player.objects.get(ID__exact=i)
                     k.append(player_)
@@ -259,8 +260,8 @@ def next_day_admin(request, year):
                         list_of_actives_a.append(elem.Name1.Name_eng)
                         list_of_actives_b.append(elem.Name2.Name_eng)
                     else:
-                        list_of_actives_a.append('')
-                        list_of_actives_b.append('')
+                        list_of_actives_a.append('sosed')
+                        list_of_actives_b.append('sosed')
                         Factor(Day=day1, UserID=player_, Name1=default_act, Name2=default_act).save() # ту логику лучше убрать в репозиторий
                     #  до этого все строчки про то, как преобразовать в нужный вид полученные данные + для тех, кто не
                     # сделал выбор - деньги по-умолчанию в банке
