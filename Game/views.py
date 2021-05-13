@@ -8,17 +8,7 @@ from django.urls import reverse
 from django.shortcuts import render
 from .models import Player, Active, Factor, Admin
 from Game.repository.repository import Repository, Factory
-import numpy as np
 
-
-# game_1 = Repository(np.arange(1,4,1))
-# print(game_1.data)
-# game_1.choice(1,
-#            ["bank","bank","sosed"],
-#            ["bank","sosed","sosed"]
-#            )
-#
-# print(game_1.gamble(1))
 
 
 def index(request):
@@ -31,11 +21,20 @@ def index(request):
 
 def to_MainWindow(request, player):
     try:
+
         player = Player.objects.get(Name=player)
+        day = player.Day
         # player.save()
         players = Player.objects.order_by('-Active_a').order_by('-Active_b')
         rating = list(players).index(player) + 1
-        actives = Active.objects.all()[:player.Day + 2]
+        id_actives = [0,1,2]
+        if day >= 4:
+            id_actives += [3, 4]
+        if day > 6:
+            id_actives += [5, 6, 7]
+            id_actives.remove(1)
+        actives = [i for i in Active.objects.all() if i.Id in id_actives]
+
     except:
         raise Http404('Что-то пошло не так в to Main menue')
     return render(request, "player/mainWindow.html", {'player': player, 'players': players,
@@ -110,12 +109,23 @@ def next_step(request, play):
 
 def make_choice(request, player_name):  # игроком нажата клавиша (следующий ход)
     try:
+        st_only=False
         player = Player.objects.get(Name=player_name)
         day = list(Admin.objects.all())[-1:][0].Day
         # player.save()
         players = Player.objects.order_by('Active_a').order_by('Active_b')
         rating = list(players).index(player) + 1
-        actives = Active.objects.all()[:day + 2]
+        ##
+        id_actives = [0, 1, 2]
+        if day >= 4:
+            id_actives += [3, 4]
+        if day > 6:
+            id_actives += [5, 7]
+            id_actives.remove(1)
+            if st_only:
+                id_actives += [6]
+        actives = [i for i in Active.objects.all() if i.Id in id_actives]
+        ##
         a = list(dict(request.POST.items()).keys())[1:]
         if len(a) == 2:
             a.sort(key=lambda x: x[0], reverse=True)  # now the first in pair is activeA in russian and etc

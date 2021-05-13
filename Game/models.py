@@ -1,6 +1,7 @@
 from django.db import models
 import csv,sys,os
 import django
+import json
 
 class Player(models.Model):
     ID = models.AutoField(auto_created=True, primary_key=True, unique=True)
@@ -11,6 +12,7 @@ class Player(models.Model):
     Active_b_pred = models.FloatField('active_b', default=100, null=False)
     Education = models.IntegerField('education', default=0)
     Day = models.IntegerField('day', default=1, null=False)
+    History = models.CharField('history', max_length=400, null=False, default='[200]')
 
     class Meta:
         verbose_name = 'Игрок'
@@ -19,8 +21,19 @@ class Player(models.Model):
     def __str__(self):
         return self.Name
 
+    def get_history(self):
+        return json.loads(self.History)
+
+    def append_to_history(self, x):
+        self.History = self.History[:-1] + ',' + str(x) + self.History[-1]
+        return 1
+
+
     def current(self, day):
         return day == self.Day   # текущий день. Возможно, можно поставить и день - 1
+
+    def SumActive(self):
+        return self.Active_a + self.Active_b
 
     def NextYear(self, a, b):
         self.Day += 1
@@ -28,6 +41,7 @@ class Player(models.Model):
         self.Active_b_pred = self.Active_b
         self.Active_a = a
         self.Active_b = b
+        self.append_to_history(self.SumActive())
 
     def percentage_increase_active_a(self):
         res = (-self.Active_a_pred + self.Active_a) / self.Active_a_pred
@@ -49,16 +63,15 @@ class Player(models.Model):
 
     def education(self):
         if self.Education == 0:
-            return 'Необразованность. Тип: 0 из бесконечности'
+            return '0'
         elif self.Education == 1:
-            return 'Образование 1. Вы закончили 4 класса образования. Очень неплохо. '
-        elif self.Education > 1 & self.Education < 3:
+            return '1'
+        elif self.Education > 4:
             return f'Уровень образования {self.Education}. Надеюсь, вы уже поняли, что дефолт скоро... очень скоро :)))'
         else:
-            return f'Образование {self.Education}. Да вы просто мой кумир!! '
+            return f'{self.Education}'
 
-    def SumActive(self):
-        return self.Active_a + self.Active_b
+
 
     def SumActive_percentage_increase(self):
         res = (self.Active_a + self.Active_b - self.Active_a_pred - self.Active_b_pred) / (self.Active_a_pred + self.Active_b_pred)

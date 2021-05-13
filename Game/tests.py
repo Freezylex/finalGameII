@@ -20,6 +20,9 @@ import numpy as np
 # print(player.Active_a)
 # player.save()
 # player = Player.objects.get(Name='Aleks 120')
+# print(player.get_history())
+# player.append_to_history(205)
+# print(player.get_history())
 # print(player.Active_a)
 # print(Player.objects.get(Name='Aleks 120').Active_a)
 # print(Player.objects.order_by('-Active_a', 'Active_b'))
@@ -47,7 +50,7 @@ import numpy as np
 # print(Active.objects.all())
 
 # print(Admin.objects.all()[0].Day)
-print(Factor.objects.all())
+# print(Factor.objects.all())
 # game_1 = Repository(np.arange(1,4,1))
 # print(game_1.data)
 # game_1.choice(1,
@@ -64,9 +67,9 @@ print(Factor.objects.all())
 # user_factors = Factor(Name1=act[0], Name2=act[1], Day=1, UserID=pla[0])
 # user_factors.save()
 # pla.delete()
-aa = Factor.objects.all()
-k = sorted(aa, key=lambda x: x.UserID.ID)
-print([i.Name1.Name_eng for i in k])
+# aa = Factor.objects.all()
+# k = sorted(aa, key=lambda x: x.UserID.ID)
+# print([i.Name1.Name_eng for i in k])
 # print(sorted([i.UserID.ID for i in a]))
 # print(pla)
 # a = pla[0]
@@ -103,33 +106,47 @@ print([i.Name1.Name_eng for i in k])
 # print(df)
 # dr = j.Gamble(1)
 # print(dr)
-a = Player.objects.filter(Name__startswith='Николай')
-for i in a:
-    print(i.Active_a)
-    print(i.Active_a_pred)
-    print(i.percentage_increase_active_a())
-    i.Active_a_pred = 100
-    i.Active_a = 100
-    i.Active_b_pred = 100
-    i.Active_b = 100
-    i.Day = 2
-    i.save()
-
-
-f = Factory()
-a = f.get_repository(id_=[1, 2])
-a.Choice(1, ['bank', 'bank'], ['bank', 'bank'])
-a.Gamble(1)
-print(a.data)
-print('st')
-ii = 1
-choices = []
-for i in a.data[a.data.index.isin([2])][a.data.columns[5:]].T[2]:
-    choices.append(f'year{ii}')
-    choices.append(f'')
-
-
-
-
+# a = Player.objects.filter(Name__startswith='Николай')
+# for i in a:
+#     print(i.Active_a)
+#     print(i.Active_a_pred)
+#     print(i.percentage_increase_active_a())
+#     i.Active_a_pred = 100
+#     i.Active_a = 100
+#     i.Active_b_pred = 100
+#     i.Active_b = 100
+#     i.Day = 2
+#     i.save()
+#
+#
+# f = Factory()
+# a = f.get_repository(id_=[1, 2])
+# a.Choice(1, ['bank', 'bank'], ['bank', 'bank'])
+# a.Gamble(1)
+# print(a.data)
+# print('st')
+# ii = 1
+# choices = []
+# for i in a.data[a.data.index.isin([2])][a.data.columns[5:]].T[2]:
+#     choices.append(f'year{ii}')
+#     choices.append(f'')
+#
 # Admin(Day=1).save()
 # print(Admin.objects.all())
+
+# import json
+#
+# a='[200]'
+# f = json.loads(a)
+# f.append(5)
+#
+# print(f)
+# a = Active(Name='Сток Тугезер', Name_eng='stock_together')
+# print(a)
+# a.save()
+# a = Active(Name='Сток онли', Name_eng='stock_only')
+# print(a)
+# a.save()
+# a = Active(Name='Индекс Биржи', Name_eng='stock_index')
+# print(a)
+# a.save()
