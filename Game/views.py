@@ -27,6 +27,7 @@ def to_MainWindow(request, player):
         # player.save()
         players = Player.objects.order_by('-Active_a').order_by('-Active_b')
         rating = list(players).index(player) + 1
+        len_rating = len(players)
         id_actives = [0,1,2]
         if day >= 4:
             id_actives += [3, 4]
@@ -37,7 +38,8 @@ def to_MainWindow(request, player):
 
     except:
         raise Http404('Что-то пошло не так в to Main menue')
-    return render(request, "player/mainWindow.html", {'player': player, 'players': players,
+    return render(request, "player/mainWindow.html", {'player': player, 'len_rating': len_rating,
+                                                      'players': players,
                                                       'actives': actives, 'rating': rating})
 
 

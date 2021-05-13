@@ -76,9 +76,9 @@ class Player(models.Model):
     def SumActive_percentage_increase(self):
         res = (self.Active_a + self.Active_b - self.Active_a_pred - self.Active_b_pred) / (self.Active_a_pred + self.Active_b_pred)
         if res >= 0:
-            output = f"+{round(100 * res, 2)}"
+            output = f"+{round(100 * res, 2)} %"
         else:
-            output = f"{round(100 * res, 2)}"
+            output = f"{round(100 * res, 2) }%"
         return output
 
     def obnulit(self):
