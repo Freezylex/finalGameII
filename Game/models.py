@@ -30,10 +30,22 @@ class Player(models.Model):
         self.Active_b = b
 
     def percentage_increase_active_a(self):
-        return round(((-self.Active_a_pred + self.Active_a) / self.Active_a_pred) * 100, 2)
+        res = (-self.Active_a_pred + self.Active_a) / self.Active_a_pred
+        if res >= 0:
+            output = f"+ {round(100 * res, 2)}%"
+        else:
+            output = f"{round(100 * res, 2)}%"
+        return output
+
 
     def percentage_increase_active_b(self):
-        return round(((-self.Active_b_pred + self.Active_b) / self.Active_b_pred) * 100, 2)
+        res = (-self.Active_b_pred + self.Active_b) / self.Active_b_pred
+        if res >= 0:
+            output = f"+ {round(100 * res, 2)}%"
+        else:
+            output = f"{round(100 * res, 2)}%"
+        return output
+
 
     def education(self):
         if self.Education == 0:
@@ -51,7 +63,7 @@ class Player(models.Model):
     def SumActive_percentage_increase(self):
         res = (self.Active_a + self.Active_b - self.Active_a_pred - self.Active_b_pred) / (self.Active_a_pred + self.Active_b_pred)
         if res >= 0:
-            output = f"+ {round(100 * res, 2)}"
+            output = f"+{round(100 * res, 2)}"
         else:
             output = f"{round(100 * res, 2)}"
         return output

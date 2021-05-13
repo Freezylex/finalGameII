@@ -287,6 +287,10 @@ def next_day_admin(request, year):
                 user.NextYear(a.round(), b.round())
                 user.Education = c
                 user.save()
+                f = user.factor_set.filter(Day=day1)[0]
+                f.ActA_increase = user.percentage_increase_active_a()
+                f.ActB_increase = user.percentage_increase_active_b()
+                f.save()
                 i += 1
             players = Player.objects.all()
 
