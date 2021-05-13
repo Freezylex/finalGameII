@@ -137,6 +137,7 @@ class InvestingOptions:
                 self.was_more_than_40 = True
         else:
             market_premium = self.inflat - 0.01
+
         self.data.loc[indexes, mon_fut] = self.data.loc[indexes, mon_prev](1 + market_premium) + self.data.loc[
             indexes, mon_prev] * self.educ * flag * self.data.loc[
                                               indexes, 'educ']
