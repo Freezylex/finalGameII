@@ -23,10 +23,10 @@ def to_MainWindow(request, player):
     try:
 
         player = Player.objects.get(Name=player)
-        day = player.Day
         # player.save()
         players = Player.objects.order_by('-Active_a').order_by('-Active_b')
         rating = list(players).index(player) + 1
+        day = player.Day
         len_rating = len(players)
         id_actives = [0,1,2]
         if day >= 4:
@@ -93,23 +93,50 @@ def to_personal_page(request):
         raise Http404('Что-то пошло не так')
     return render(request, "player/Personal Page.html", {'player': player, 'players': players, 'rating': rating})
 
+def to_top(request, player):
+    try:
+        a = Player.objects.filter(Name=player)
+        player = a[0]
+        players = Player.objects.order_by('-Active_a').order_by('-Active_b')
+        rating = list(players).index(player) + 1
+    except:
+        raise Http404('Что-то пошло не так')
+    return render(request, "player/Personal Page.html", {'player': player, 'players': players, 'rating': rating})
+
+
 
 def next_step(request, play):
     try:
+        st_only = False
         player = Player.objects.get(Name=play)
         # player.save()
         players = Player.objects.order_by('-Active_a').order_by('-Active_b')
         rating = list(players).index(player) + 1
         flag = Admin.objects.order_by('-Day')[0].Day
+        day = list(Admin.objects.all())[-1:][0].Day
         print(flag)
         if player.Day == flag:
             pass
+        len_rating = len(players)
+        id_actives = [0, 1, 2]
+        if day >= 4:
+            id_actives += [3, 4]
+        if day > 6:
+            id_actives += [5, 7]
+            id_actives.remove(1)
+            if st_only:
+                id_actives += [6]
+        actives = [i for i in Active.objects.all() if i.Id in id_actives]
     except:
-        raise Http404('Что-то пошло не так oooo')
-    return render(request, "player/Personal Page.html", {'player': player, 'players': players, 'rating': rating})
+        raise Http404('Что-то пошло не так в make_chio')
+    return render(request, "player/mainWindow.html", {'player': player, 'len_rating': len_rating,
+                                                      'players': players,
+                                                      'actives': actives, 'rating': rating})
 
 
-def make_choice(request, player_name):  # игроком нажата клавиша (следующий ход)
+
+
+def make_choice(request, player_name):  # игроком нажата клавиша (подтвердить выбор)
     try:
         st_only=False
         player = Player.objects.get(Name=player_name)
@@ -118,6 +145,7 @@ def make_choice(request, player_name):  # игроком нажата клави
         players = Player.objects.order_by('Active_a').order_by('Active_b')
         rating = list(players).index(player) + 1
         ##
+        len_rating = len(players)
         id_actives = [0, 1, 2]
         if day >= 4:
             id_actives += [3, 4]
@@ -128,51 +156,24 @@ def make_choice(request, player_name):  # игроком нажата клави
                 id_actives += [6]
         actives = [i for i in Active.objects.all() if i.Id in id_actives]
         ##
-        a = list(dict(request.POST.items()).keys())[1:]
-        if len(a) == 2:
-            a.sort(key=lambda x: x[0], reverse=True)  # now the first in pair is activeA in russian and etc
-            # print(a)
-            # print(set([i.Name for i in actives]))
-            # print(Factor.objects.all())
-            act_a = Active.objects.get(Name__startswith=a[0])
-            act_b = Active.objects.get(Name_eng__startswith=a[1])
-            user_factors = Factor(Name1=act_a, Name2=act_b, Day=day, UserID=player)
-            # print('we are here')
-            factor = Factor.objects.filter(Day=day, UserID=player)
-            if len(factor) != 0:
-                # print(factor)
-                factor.delete()
-                # print('factors deleted')
-                # print(Factor.objects.all())
-            user_factors.save()
-            # player.NextYear()
-            # player.Active_a += 220
-            # player.Active_b += 20
-            # player.save()
-    except Active.DoesNotExist:
-        day = list(Admin.objects.all())[-1:][0].Day
-        player = Player.objects.get(Name=player_name)
-        # player.save()
-        players = Player.objects.order_by('-Active_a').order_by('-Active_b')
-        rating = list(players).index(player) + 1
-        actives = Active.objects.all()[:day + 2]
+        a = request.POST.get('activeA')
+        b = request.POST.get('activeB')
+        if not a:
+            a = 'Банк'
+        if not b:
+            b = 'Банк'
+        act_a = Active.objects.get(Name__startswith=a)
+        act_b = Active.objects.get(Name__startswith=b)
+        user_factors = Factor(Name1=act_a, Name2=act_b, Day=day, UserID=player)
+        factor = Factor.objects.filter(Day=day, UserID=player)
+        if len(factor) != 0:
+            factor.delete()
+        user_factors.save()
     except:
         raise Http404('Что-то пошло не так в make_chio')
-    return render(request, "player/mainWindow.html", {'player': player, 'players': players,
+    return render(request, "player/mainWindow.html", {'player': player, 'len_rating': len_rating,
+                                                      'players': players,
                                                       'actives': actives, 'rating': rating})
-
-
-# def to_M(request, player_name):
-#     try:
-#         player = Player.objects.get(Name=player_name)
-#         # player.save()
-#         players = Player.objects.all()  # TODO sort palyers according their effectivness during the game
-#         actives = Active.objects.all()[:player.Day + 2]
-#     except:
-#         raise Http404('Что-то пошло не так в to Main menue')
-#     return render(request, "player/mainWindow.html", {'player': player, 'players': players,
-#                                                       'actives' : actives})
-
 
 def next_day(request):
     try:

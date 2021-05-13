@@ -54,32 +54,39 @@
 
             <td>{{ active.Name }}</td>
             <td>
-                <input type="checkbox" name={{ active.Name }} />
+                <label class="labelcustom">
+                    hjk
+                    <input class="form-check-input big-checkbox" type="radio" name="activeA" value="{{ active.Name }}" />
+                </label>
             </td>
             <td>
-                 <input type="checkbox" name={{ active.Name_eng }} />
+                <label class="labelcustom">
+                    hkj
+                    <input  class="form-check-input big-checkbox" type="radio" name="activeB" value="{{ active.Name }}" />
+                </label>
             </td>
         </tr>
         {% endfor %}
     </table>
     <p>
-    <button class="btn btn-dark button1">Подтвердить выбор</button>
+    <button class="btn btn-secondary button1">Подтвердить выбор</button>
     </p>
 </form>
 <form action="{%  url 'user_page:next_step' player.Name %}" method="post">
                 {% csrf_token %}
-                <button class="btn button1 btn-light ">Обновить страничку</button>
+                <button class="btn button1 btn-outline-dark ">Обновить страничку</button>
 </form>
-<table  class="table">
+<table  class="table knopki">
+    <thead>
     <tr>
         <th>
             <form action="{%  url 'user_page:to_MainWindow' player.Name%}" method="post">
                 {% csrf_token %}
-                <button class="btn btn-dark width_bottom">Инвестировать</button>
+                <button class="btn btn-dark ">Инвестировать</button>
             </form>
         </th>
         <th>
-            <form action="{%  url 'user_page:next_step' player.Name %}" method="post">
+            <form action="{%  url 'user_page:to_top' player.Name %}" method="post">
                 {% csrf_token %}
                 <button class="btn btn-light width_bottom">Топ </button>
             </form>
@@ -91,6 +98,7 @@
             </form>
         </th>
     </tr>
+    </thead>
 </table>
 
 

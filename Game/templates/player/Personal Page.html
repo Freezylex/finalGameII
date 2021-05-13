@@ -30,24 +30,33 @@
     <tr>
         <th scope="row"></th>
         <td>{{ i.Name }}</td>
+        <td>{{ i.SumActive }}</td>
     {% endfor %}
 {% endif %}
 </table>
-<table  class="table">
-    <tr>
-        <th>
+
+<table  class="table knopki">
+    <thead>
+    <tr><th>
             <form action="{%  url 'user_page:to_MainWindow' player.Name%}" method="post">
                 {% csrf_token %}
-                <button class="btn btn-dark width_bottom">Инвестировать</button>
+                <button class="btn btn-light ">Инвестировать</button>
+            </form>
+        </th>
+        <th>
+            <form action="{%  url 'user_page:to_top' player.Name %}" method="post">
+                {% csrf_token %}
+                <button class="btn  btn-dark width_bottom">Топ </button>
             </form>
         </th>
         <th>
             <form action="{%  url 'user_page:to_top_players' player.Name%}" method="post">
                 {% csrf_token %}
-                <button class="btn btn-light width_bottom">Личная страничка</button>
+                <button class="btn btn-light width_bottom">История</button>
             </form>
         </th>
     </tr>
+    </thead>
 </table>
 <script>
 $('.tb tbody tr').each(function(i) {
