@@ -196,7 +196,7 @@ factory = Factory()
 
 def next_day_admin(request, year):
     try:
-
+        empty_choice = 'bank'
         flag = True
         day = list(Admin.objects.all())[-1:][0].Day  # Получаем текущий день от админа
         day1 = day
@@ -261,7 +261,7 @@ def next_day_admin(request, year):
                 list_of_actives_b = []
                 dict_k = {el.UserID.ID: el for el in k}
                 k = []
-                default_act = Active.objects.get(Name_eng='sosed')
+                default_act = Active.objects.get(Name_eng=empty_choice)
                 for i in game1.id_:
                     player_ = Player.objects.get(ID__exact=i)
                     k.append(player_)
@@ -270,8 +270,8 @@ def next_day_admin(request, year):
                         list_of_actives_a.append(elem.Name1.Name_eng)
                         list_of_actives_b.append(elem.Name2.Name_eng)
                     else:
-                        list_of_actives_a.append('sosed')
-                        list_of_actives_b.append('sosed')
+                        list_of_actives_a.append(empty_choice)
+                        list_of_actives_b.append(empty_choice)
                         Factor(Day=day1, UserID=player_, Name1=default_act, Name2=default_act).save() # ту логику лучше убрать в репозиторий
                     #  до этого все строчки про то, как преобразовать в нужный вид полученные данные + для тех, кто не
                     # сделал выбор - деньги по-умолчанию в банке
