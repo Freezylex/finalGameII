@@ -82,7 +82,8 @@ class Factor(models.Model):
     Name2 = models.ForeignKey(Active, on_delete=models.CASCADE, null=True, related_name='active_b')
     Day = models.IntegerField('day', null=False)
     UserID = models.ForeignKey(Player, on_delete=models.CASCADE, null=False)
-
+    ActA_increase = models.CharField('actAinc', max_length=10, null=True)
+    ActB_increase = models.CharField('actBinc', max_length=10, null=True)
     def __str__(self):
         return str(self.Day) + ' ' + str(self.UserID) + ' ' + str(self.Name1) + ' ' + str(self.Name2)
 
