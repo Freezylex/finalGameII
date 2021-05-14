@@ -114,7 +114,7 @@ def next_step(request, play):
         rating = list(players).index(player) + 1
         flag = Admin.objects.order_by('-Day')[0].Day
         day = list(Admin.objects.all())[-1:][0].Day
-        print(flag)
+
         if player.Day == flag:
             pass
         len_rating = len(players)
