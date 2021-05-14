@@ -22,7 +22,7 @@ class Player(models.Model):
         return self.Name
 
     def get_history(self):
-        return json.loads(self.History)
+        return self.History
 
     def append_to_history(self, x):
         self.History = self.History[:-1] + ',' + str(x) + self.History[-1]

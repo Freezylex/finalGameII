@@ -5,22 +5,65 @@
     <!-- Required meta tags -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
     <link rel="stylesheet" href="../../static/css/style.css">
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
     <title>Economic Game</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.2.1/dist/chart.min.js"></script>
 </head>
-<body class="heading">
+<body>
 {% if player %}
-    <h2 class="lead">История операций</h2>
+    <h2 class="lead heading">История операций</h2>
 {% else %}
 <h3 class="lead heading">Not found stata</h3>
 {% endif %}
 <hr>
-<p class="lead text_small">Ваш капитал</p>
-Здесь будет график
+<canvas id="chart" width="4" height="5"></canvas>
+<script>
+    const ctx = document.getElementById('chart').getContext('2d');
+    const xlabels = {{years}};
+
+    const datal = {{ player.get_history }};
+
+    const myChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: xlabels,
+            datasets: [{
+                label: 'Ваш капитал',
+                options:{plugins: {label:{display:false}}},
+                data: datal,
+                backgroundColor: [
+                    'rgba(255, 99, 132, 0.2)',
+                    'rgba(54, 162, 235, 0.2)',
+                    'rgba(255, 206, 86, 0.2)',
+                    'rgba(75, 192, 192, 0.2)',
+                    'rgba(153, 102, 255, 0.2)',
+                    'rgba(255, 159, 64, 0.2)'
+                ],
+                borderColor: 'rgb(0,7,7)',
+                borderWidth: 1,
+                tension: 0.1
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                },
+            legend: {
+                display: false
+                }
+            }
+        }
+    });
+  {#  window.onload = function () {#}
+  {#// We render via Django template#}
+  {#      const datal = JSON.parse("{{player|escapejs}}");#}
+  {#      var t = document.getElementById("1")#}
+  {#      t.innerHTML += datal}#}
+
+</script>
 <table class="table">
     <thead>
     <tr class="textik heading">

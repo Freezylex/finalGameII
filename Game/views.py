@@ -1,3 +1,5 @@
+import json
+
 from django.http import Http404, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
@@ -69,13 +71,11 @@ def to_top_players(request, player_nam):
         #     else:
         #         user_choices.append('err in data. repository is not initialised')
 
-
-
-
+        years = json.dumps(list(range(1, player.Day + 1)))
 
     except:
         raise Http404('Что-то пошло не так')
-    return render(request, "player/statistica.html", {'player': player, 'user_choices' : user_choices,
+    return render(request, "player/statistica.html", {'years': years, 'player': player, 'user_choices' : user_choices,
                                                       'players': players, 'rating': rating})
 
 
@@ -159,9 +159,9 @@ def make_choice(request, player_name):  # игроком нажата клави
         a = request.POST.get('activeA')
         b = request.POST.get('activeB')
         if not a:
-            a = 'Банк'
+            a = 'Стартап Соседа'
         if not b:
-            b = 'Банк'
+            b = 'Стартап Соседа'
         act_a = Active.objects.get(Name__startswith=a)
         act_b = Active.objects.get(Name__startswith=b)
         user_factors = Factor(Name1=act_a, Name2=act_b, Day=day, UserID=player)
@@ -199,7 +199,7 @@ factory = Factory()
 
 def next_day_admin(request, year):
     try:
-        empty_choice = 'bank'
+        empty_choice = 'sosed'
         flag = True
         day = list(Admin.objects.all())[-1:][0].Day  # Получаем текущий день от админа
         day1 = day
