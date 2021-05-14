@@ -159,9 +159,9 @@ def make_choice(request, player_name):  # игроком нажата клави
         a = request.POST.get('activeA')
         b = request.POST.get('activeB')
         if not a:
-            a = 'Стартап Соседа'
+            a = 'Банк'
         if not b:
-            b = 'Стартап Соседа'
+            b = 'Банк'
         act_a = Active.objects.get(Name__startswith=a)
         act_b = Active.objects.get(Name__startswith=b)
         user_factors = Factor(Name1=act_a, Name2=act_b, Day=day, UserID=player)
@@ -199,7 +199,7 @@ factory = Factory()
 
 def next_day_admin(request, year):
     try:
-        empty_choice = 'sosed'
+        empty_choice = 'bank'
         flag = True
         day = list(Admin.objects.all())[-1:][0].Day  # Получаем текущий день от админа
         day1 = day
