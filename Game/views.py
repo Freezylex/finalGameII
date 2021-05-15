@@ -3,6 +3,7 @@ import json
 from django.http import Http404, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
+from django.db.models import F
 
 # from .static.hard.banking import Repository
 # Create your views here.
@@ -23,10 +24,9 @@ def index(request):
 
 def to_MainWindow(request, player):
     try:
-
         player = Player.objects.get(Name=player)
         # player.save()
-        players = Player.objects.order_by('-Active_a').order_by('-Active_b')
+        players = Player.objects.annotate(s=F('Active_a') + F('Active_b')).order_by('-s')
         rating = list(players).index(player) + 1
         day = player.Day
         len_rating = len(players)
@@ -58,7 +58,7 @@ def to_top_players(request, player_nam):
             # какие диведенты
 
         # player.save()
-        players = Player.objects.order_by('-Active_a').order_by('-Active_b')
+        players = Player.objects.annotate(s=F('Active_a') + F('Active_b')).order_by('-s')
         rating = list(players).index(player) + 1
         user_choices = Factor.objects.filter(UserID=player).order_by('Day')
         # if player.Day == 1:
@@ -81,13 +81,28 @@ def to_top_players(request, player_nam):
 
 def to_personal_page(request):
     try:
+        if request.POST['user'] =='adminPage':
+            try:
+                try:
+                    day = list(Admin.objects.all())[-1:][0].Day
+                except:
+                    day = 1
+                    Admin(Day=1).save()
+                user_factors = Factor.objects.filter(Day=day)
+                players = Player.objects.annotate(s=F('Active_a') + F('Active_b')).order_by('-s')
+                actives = Active.objects.all()
+            except:
+                raise Http404('Что-то пошло не так в to_admin_page')
+            return render(request, "player/AdminPage.html", {'user_factors': user_factors, 'actives': actives,
+                                                                 'players': players, 'day': day})
+
         a = Player.objects.filter(Name=request.POST['user'])
         if len(a) == 0:
             player = Player(Name=request.POST['user'])
             player.save()
         else:
             player = a[0]
-        players = Player.objects.order_by('-Active_a').order_by('-Active_b')
+        players = Player.objects.annotate(s=F('Active_a') + F('Active_b')).order_by('-s')
         rating = list(players).index(player) + 1
     except:
         raise Http404('Что-то пошло не так')
@@ -97,7 +112,7 @@ def to_top(request, player):
     try:
         a = Player.objects.filter(Name=player)
         player = a[0]
-        players = Player.objects.order_by('-Active_a').order_by('-Active_b')
+        players = Player.objects.annotate(s=F('Active_a') + F('Active_b')).order_by('-s')
         rating = list(players).index(player) + 1
     except:
         raise Http404('Что-то пошло не так')
@@ -110,7 +125,7 @@ def next_step(request, play):
         st_only = False
         player = Player.objects.get(Name=play)
         # player.save()
-        players = Player.objects.order_by('-Active_a').order_by('-Active_b')
+        players = Player.objects.annotate(s=F('Active_a') + F('Active_b')).order_by('-s')
         rating = list(players).index(player) + 1
         flag = Admin.objects.order_by('-Day')[0].Day
         day = list(Admin.objects.all())[-1:][0].Day
@@ -142,7 +157,7 @@ def make_choice(request, player_name):  # игроком нажата клави
         player = Player.objects.get(Name=player_name)
         day = list(Admin.objects.all())[-1:][0].Day
         # player.save()
-        players = Player.objects.order_by('Active_a').order_by('Active_b')
+        players = Player.objects.annotate(s=F('Active_a') + F('Active_b')).order_by('-s')
         rating = list(players).index(player) + 1
         ##
         len_rating = len(players)
@@ -175,42 +190,24 @@ def make_choice(request, player_name):  # игроком нажата клави
                                                       'players': players,
                                                       'actives': actives, 'rating': rating})
 
-def next_day(request):
-    try:
-        day = Admin.objects.order_by('-Day')[0].Day
-        user_factors = Factor.objects.filter(Day=day)
-        players = Player.objects.all()
-        actves = Active.objects.all()
-        for i in user_factors:
-            pass
-            # print(i)
-
-        # сразу же меняем день
-        new_day = Admin(Day=day + 1)
-        # new_day.save()
-
-    except:
-        raise Http404('Что-то пошло не так в to Main menue')
-    return None
-
 
 factory = Factory()
 
 
 def next_day_admin(request, year):
     try:
-        empty_choice = 'bank'
+        empty_choice = 'sosed'
         flag = True
         day = list(Admin.objects.all())[-1:][0].Day  # Получаем текущий день от админа
         day1 = day
         Admin.objects.all().delete()  # удаляем этот день из базы
         user_factors = Factor.objects.filter(Day=day)  # достаем все выборы за этот день
-        players = Player.objects.all()  # достали игроков и активы
+        players = Player.objects.annotate(s=F('Active_a') + F('Active_b')).order_by('-s')
         actives = Active.objects.all()
         if int(year) == 400:  # если нажата кнопка превести всех пользователей в состояние по-умлочанию
             newday = Admin(Day=1)  # сохраняем день на 1
             newday.save()
-            players = Player.objects.all()
+            players = Player.objects.annotate(s=F('Active_a') + F('Active_b')).order_by('-s')
             for i in players:
                 i.obnulit()  # у всех игроков тоже обнуляем день и активы по умолчанию
                 i.save()
@@ -236,7 +233,7 @@ def next_day_admin(request, year):
             Player(Name='testUser').save()
             d = Admin(Day=day)  # сохраняем текущий день и показываем всех пользователей
             d.save()
-            players = Player.objects.all()
+            players = Player.objects.annotate(s=F('Active_a') + F('Active_b')).order_by('-s')
             return render(request, "player/AdminPage.html", {'user_factors': user_factors, 'actives': actives,
                                                              'players': players, 'day': day})
 
@@ -305,7 +302,7 @@ def next_day_admin(request, year):
                 f.ActB_increase = user.percentage_increase_active_b()
                 f.save()
                 i += 1
-            players = Player.objects.all()
+        players = Player.objects.annotate(s=F('Active_a') + F('Active_b')).order_by('-s')
 
 
 
@@ -323,7 +320,7 @@ def to_admin_page(request):
             day = 1
             Admin(Day=1).save()
         user_factors = Factor.objects.filter(Day=day)
-        players = Player.objects.order_by('-Active_a').order_by('-Active_b')
+        players = Player.objects.annotate(s=F('Active_a') + F('Active_b')).order_by('-s')
         actives = Active.objects.all()  # todo допилить админскую страничку
     except:
         raise Http404('Что-то пошло не так в to_admin_page')

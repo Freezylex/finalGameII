@@ -88,6 +88,7 @@ class Player(models.Model):
         self.Active_b = 100
         self.Active_b_pred = 100
         self.Education = 0
+        self.History = '[200]'
         return 1
 
 

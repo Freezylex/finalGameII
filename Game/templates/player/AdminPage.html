@@ -94,7 +94,7 @@
     <tr>
         <th scope="row"></th>
         <td>
-            <form action="{% url 'user_page:next_step' i.Name %}" method="post">
+            <form action="{% url 'user_page:next_step' i.Name%}" method="post">
 
                 {% csrf_token %}
 
@@ -102,7 +102,7 @@
 
             </form>
         </td>
-        <td>{{ i.SumActive }} ({{ i.SumActive_percentage_increase }} %)</td>
+        <td>{{ i.SumActive }} ({{ i.SumActive_percentage_increase }})</td>
     </tr>
     {% endfor %}
 {% endif %}

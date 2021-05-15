@@ -152,3 +152,6 @@ import numpy as np
 # a = Active(Name='Индекс Биржи', Name_eng='stock_index')
 # print(a)
 # a.save()
+# from django.db.models import F
+# a = Player.objects.annotate(s=F('Active_a') + F('Active_b')).order_by('-s')
+# print(a)
