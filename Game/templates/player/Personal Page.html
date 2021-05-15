@@ -34,22 +34,23 @@
     {% endfor %}
 {% endif %}
 </table>
-
-<table  class="table knopki">
+<div class="knopki">
+<table  class="table table1">
     <thead>
-    <tr><th>
+    <tr>
+        <th class="first_knopka">
             <form action="{%  url 'user_page:to_MainWindow' player.Name%}" method="post">
                 {% csrf_token %}
-                <button class="btn btn-light ">Инвестировать</button>
+                <button class="btn btn-light width_bottom">Инвестировать</button>
             </form>
         </th>
-        <th>
+        <th class="first_knopka">
             <form action="{%  url 'user_page:to_top' player.Name %}" method="post">
                 {% csrf_token %}
-                <button class="btn  btn-dark width_bottom">Топ </button>
+                <button class="btn btn-dark width_bottom">Топ </button>
             </form>
         </th>
-        <th>
+        <th class="first_knopka">
             <form action="{%  url 'user_page:to_top_players' player.Name%}" method="post">
                 {% csrf_token %}
                 <button class="btn btn-light width_bottom">История</button>
@@ -58,6 +59,7 @@
     </tr>
     </thead>
 </table>
+</div>
 <script>
 $('.tb tbody tr').each(function(i) {
 var number = i + 1;

@@ -11,7 +11,9 @@
     <link rel="stylesheet" href="../../static/css/style.css">
     <title>Economic Game</title>
 </head>
-<body>
+<body class="body_ch">
+<div class="div_body">
+<div class="div_body__item meat custom-control">
 {% if player %}
     <h3 class="lead heading">{{player.Name}}</h3>
 {% else %}
@@ -39,27 +41,28 @@
     </tr>
 
 </table>
+
 <h4 class="heading1 lead heading">Инвестируйте!</h4>
 
 <form class="d" action="{%  url 'user_page:make_choice' player.Name%}" method="post">
     {% csrf_token %}
-    <table class="table">
+    <table class="table table2">
         <tr>
             <th>Инвестиции</th>
-            <th>A</th>
-            <th>Б</th>
+            <th class="first_knopka">A</th>
+            <th class="first_knopka">Б</th>
         </tr>
         {% for active in actives %}
         <tr>
 
             <td>{{ active.Name }}</td>
-            <td>
+            <td class="first_knopka">
                 <label class="labelcustom">
                     hjk
                     <input class="form-check-input big-checkbox" type="radio" name="activeA" value="{{ active.Name }}" />
                 </label>
             </td>
-            <td>
+            <td class="first_knopka">
                 <label class="labelcustom">
                     hkj
                     <input  class="form-check-input big-checkbox" type="radio" name="activeB" value="{{ active.Name }}" />
@@ -76,31 +79,26 @@
                 {% csrf_token %}
                 <button class="btn button1 btn-outline-dark ">Обновить страничку</button>
 </form>
-<table  class="table knopki">
-    <thead>
-    <tr>
-        <th>
-            <form action="{%  url 'user_page:to_MainWindow' player.Name%}" method="post">
-                {% csrf_token %}
-                <button class="btn btn-dark ">Инвестировать</button>
-            </form>
-        </th>
-        <th>
-            <form action="{%  url 'user_page:to_top' player.Name %}" method="post">
-                {% csrf_token %}
-                <button class="btn btn-light width_bottom">Топ </button>
-            </form>
-        </th>
-        <th>
-            <form action="{%  url 'user_page:to_top_players' player.Name%}" method="post">
-                {% csrf_token %}
-                <button class="btn btn-light width_bottom">История</button>
-            </form>
-        </th>
-    </tr>
-    </thead>
-</table>
-
+</div>
+<div class="div_body__item knopki_invest custom-control">
+    <form action="{%  url 'user_page:to_MainWindow' player.Name%}" method="post">
+            {% csrf_token %}
+            <button class="btn btn-dark width_bottom">Инвестировать</button>
+    </form>
+</div>
+<div class="div_body__item knopki_top custom-control">
+    <form action="{%  url 'user_page:to_top' player.Name %}" method="post">
+        {% csrf_token %}
+        <button class="btn btn-light width_bottom">Топ </button>
+    </form>
+</div>
+<div class="div_body__item knopki_hisory custom-control">
+    <form action="{%  url 'user_page:to_top_players' player.Name%}" method="post">
+        {% csrf_token %}
+        <button class="btn btn-light width_bottom">История</button>
+    </form>
+</div>
+</div>
 <script>
 
         (function() {
