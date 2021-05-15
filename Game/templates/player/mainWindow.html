@@ -18,9 +18,9 @@
     <h3 class="lead heading">не найдено</h3>
 {% endif %}
 <table class="table">
-    <tr>
-        <th >Актив A <br> {{ player.Active_a }} </th>
-        <th>Капитал <br> {{ player.SumActive }}({{ player.SumActive_percentage_increase }})</th>
+    <tr class="dff">
+        <th>Актив A <br> {{ player.Active_a }} </th>
+        <th>Капитал <br> <a class="df">{{ player.SumActive }}({{ player.SumActive_percentage_increase }})</a></th>
         <th>Актив Б <br> {{ player.Active_b }} </th>
     </tr>
 </table>
@@ -101,7 +101,24 @@
     </thead>
 </table>
 
+<script>
 
+        (function() {
+            let ctx = document.getElementsByClassName("df");
+            let ct = ctx[0].style;
+            var flag = "{{ player.SumActive_percentage_increase }}"
+            console.log(flag[0])
+            if (flag[0] === "+")
+            {
+                ct.color = 'red';
+            }
+            else{
+                ct.color = "rgba(169,154,154,0.8)";
+            }
+
+
+        })();
+</script>
 <!-- Optional JavaScript -->
 <!-- jQuery first, then Popper.js, then Bootstrap JS -->
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>

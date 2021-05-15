@@ -43,6 +43,11 @@ font-weight: 450;
     height: 220%;
     background: #ccc;
 }
+.df{ color: rgba(210, 20, 20, 0.8);}
+
+.dff{
+    text-align: center;
+}
 
 .knopki{
     position: fixed;
