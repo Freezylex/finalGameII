@@ -9,31 +9,37 @@ transform: translate(-50%, 0);
 .div_body{
     /*position: fixed;*/
     display: grid;
-    margin: auto;
-    grid-template-rows: 90% 1fr ;
-    grid-gap: 10px;
-    width: 100%;
-    max-width: 500px;
-    height: 100%;
-    ustify-items: center;
+    grid-template-rows: 85% 15%;
+    grid-template-columns: repeat(3, 1fr);
+    justify-items: center;
+    /*width: 100vw;*/
+    height: 100vh;
     justify-content: space-between;
     grid-template-areas:
             "meat meat meat"
-            "knopki_invest knopki_top knopki_history"
+            "knopki_invest knopki_top history"
 }
 .knopki_invest{
    grid-area: knopki_invest;
+    background-color: aqua;
 }
 .knopki_history{
-   grid-area: knopki_history;
+    background-color: red;
+
+}
+.history{
+    grid-area: history;
+    background-color: aqua;
 }
 .knopki_top{
    grid-area: knopki_top;
+    background-color: #8660a9;
 }
 
 .meat{
     overflow: auto;
     grid-area: meat;
+    background-color: #6e5334;
 }
 /*@media all and (max-width: 575px) {*/
 /*.row {*/

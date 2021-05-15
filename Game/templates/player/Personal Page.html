@@ -12,8 +12,9 @@
     <title>Economic Game</title>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 </head>
-<body>
-
+<body  class="body_ch">
+<div class="div_body">
+<div class="div_body__item meat custom-control">
 
 <h4 class="lead heading">Топ игроков</h4>
 
@@ -34,31 +35,25 @@
     {% endfor %}
 {% endif %}
 </table>
-<div class="knopki">
-<table  class="table table1">
-    <thead>
-    <tr>
-        <th class="first_knopka">
-            <form action="{%  url 'user_page:to_MainWindow' player.Name%}" method="post">
-                {% csrf_token %}
-                <button class="btn btn-light width_bottom">Инвестировать</button>
-            </form>
-        </th>
-        <th class="first_knopka">
-            <form action="{%  url 'user_page:to_top' player.Name %}" method="post">
-                {% csrf_token %}
-                <button class="btn btn-dark width_bottom">Топ </button>
-            </form>
-        </th>
-        <th class="first_knopka">
-            <form action="{%  url 'user_page:to_top_players' player.Name%}" method="post">
-                {% csrf_token %}
-                <button class="btn btn-light width_bottom">История</button>
-            </form>
-        </th>
-    </tr>
-    </thead>
-</table>
+</div>
+<div class="div_body__item knopki_invest custom-control">
+    <form action="{%  url 'user_page:to_MainWindow' player.Name%}" method="post">
+            {% csrf_token %}
+            <button class="btn btn-light width_bottom">Инвестировать</button>
+    </form>
+</div>
+<div class="div_body__item knopki_top custom-control">
+    <form action="{%  url 'user_page:to_top' player.Name %}" method="post">
+        {% csrf_token %}
+        <button class="btn btn-dark width_bottom">Топ </button>
+    </form>
+</div>
+<div class="div_body__item hisory custom-control">
+    <form action="{%  url 'user_page:to_top_players' player.Name%}" method="post">
+        {% csrf_token %}
+        <button class="btn btn-light width_bottom">История</button>
+    </form>
+</div>
 </div>
 <script>
 $('.tb tbody tr').each(function(i) {

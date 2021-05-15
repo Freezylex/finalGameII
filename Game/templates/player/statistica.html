@@ -12,7 +12,9 @@
     <title>Economic Game</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@3.2.1/dist/chart.min.js"></script>
 </head>
-<body>
+<body  class="body_ch">
+<div class="div_body">
+<div class="div_body__item meat custom-control">
 {% if player %}
     <h2 class="lead heading">История операций</h2>
 {% else %}
@@ -98,34 +100,25 @@
             </tr>
 {% endif %}
 </table>
-
-
-
-<div class="knopki">
-<table  class="table table1">
-    <thead>
-    <tr>
-        <th class="first_knopka">
-            <form action="{%  url 'user_page:to_MainWindow' player.Name%}" method="post">
-                {% csrf_token %}
-                <button class="btn btn-light width_bottom">Инвестировать</button>
-            </form>
-        </th>
-        <th class="first_knopka">
-            <form action="{%  url 'user_page:to_top' player.Name %}" method="post">
-                {% csrf_token %}
-                <button class="btn btn-light width_bottom">Топ </button>
-            </form>
-        </th>
-        <th class="first_knopka">
-            <form action="{%  url 'user_page:to_top_players' player.Name%}" method="post">
-                {% csrf_token %}
-                <button class="btn btn-dark width_bottom">История</button>
-            </form>
-        </th>
-    </tr>
-    </thead>
-</table>
+</div>
+<div class="div_body__item knopki_invest custom-control">
+    <form action="{%  url 'user_page:to_MainWindow' player.Name%}" method="post">
+            {% csrf_token %}
+            <button class="btn btn-light width_bottom">Инвестировать</button>
+    </form>
+</div>
+<div class="div_body__item knopki_top custom-control">
+    <form action="{%  url 'user_page:to_top' player.Name %}" method="post">
+        {% csrf_token %}
+        <button class="btn btn-light width_bottom">Топ </button>
+    </form>
+</div>
+<div class="div_body__item custom-control">
+    <form action="{%  url 'user_page:to_top_players' player.Name%}" method="post">
+        {% csrf_token %}
+        <button class="btn btn-dark width_bottom">История</button>
+    </form>
+</div>
 </div>
 
 <!-- Optional JavaScript -->
