@@ -2,6 +2,7 @@
 <!doctype html>
 <html lang="ru">
 <head>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
     <!-- Required meta tags -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -14,14 +15,14 @@
 </head>
 <body  class="body_ch">
 <div class="div_body">
-<div class="div_body__item meat custom-control">
+<div class="div_body__item meat">
 {% if player %}
     <h2 class="lead heading">История операций</h2>
 {% else %}
 <h3 class="lead heading">Not found stata</h3>
 {% endif %}
 <hr>
-<canvas id="chart" width="4" height="5"></canvas>
+<canvas id="chart"></canvas>
 <script>
     const ctx = document.getElementById('chart').getContext('2d');
     const xlabels = {{years}};
@@ -67,8 +68,8 @@
 
 </script>
 <table class="table">
-    <thead>
-    <tr class="textik heading">
+    <thead class="table1">
+    <tr class="textik heading table1">
         <td>Актив</td>
         <td>Вложение</td>
         <td>Доход</td>
@@ -78,18 +79,18 @@
         {%  for choice_per_year in user_choices %}
             <tr>
                 <td></td>
-                <td><small class="text-muted textik">{{ choice_per_year.Day }}й год</small></td>
+                <td class="table1"><small class="text-muted textik">{{ choice_per_year.Day }}й год</small></td>
                 <td></td>
             </tr>
             <tr>
-                <td class="textulic1">A</td>
-                <td class="textulic">{{ choice_per_year.Name1.Name }}</td>
-                <td class="textulic1">{{ choice_per_year.ActA_increase }} </td>
+                <td class="textulic1 table1">A</td>
+                <td class="textulic table1">{{ choice_per_year.Name1.Name }}</td>
+                <td class="textulic1 table1">{{ choice_per_year.ActA_increase }} </td>
             </tr>
             <tr>
-                <td class="textulic1">B</td>
-                <td class="textulic">{{ choice_per_year.Name2.Name }}</td>
-                <td class="textulic1">{{ choice_per_year.ActB_increase }}</td>
+                <td class="textulic1 table1">B</td>
+                <td class="textulic table1">{{ choice_per_year.Name2.Name }}</td>
+                <td class="textulic1 table1">{{ choice_per_year.ActB_increase }}</td>
             </tr>
         {% endfor %}
 {% else %}
@@ -104,23 +105,40 @@
 <div class="div_body__item knopki_invest custom-control">
     <form action="{%  url 'user_page:to_MainWindow' player.Name%}" method="post">
             {% csrf_token %}
-            <button class="btn btn-light width_bottom">Инвестировать</button>
+            <button class="btn width_bottom "><img class="greyed" src="../../static/hard/invest.svg" alt="" width="40" height="40"/><a class="verysmall mard">Инвестировать</a></button>
     </form>
 </div>
 <div class="div_body__item knopki_top custom-control">
     <form action="{%  url 'user_page:to_top' player.Name %}" method="post">
         {% csrf_token %}
-        <button class="btn btn-light width_bottom">Топ </button>
+        <button class="btn width_bottom"><img class="greyed" src="../../static/hard/top.svg" alt="" width="40" height="40"/><a class="verysmall mard2">Топ</a></button>
     </form>
 </div>
-<div class="div_body__item custom-control">
+<div class="div_body__item history custom-control">
     <form action="{%  url 'user_page:to_top_players' player.Name%}" method="post">
         {% csrf_token %}
-        <button class="btn btn-dark width_bottom">История</button>
+        <button class="btn width_bottom"><img src="../../static/hard/history.svg" alt="" width="40" height="40"/><a class="verysmall mard1">История</a></button>
     </form>
 </div>
 </div>
-
+<script>
+    $('img.greyed').each(function(){
+  var $img = $(this);
+  var imgClass = $img.attr('class');
+  var imgURL = $img.attr('src');
+  $.get(imgURL, function(data) {
+    var $svg = $(data).find('svg');
+    if(typeof imgClass !== 'undefined') {
+      $svg = $svg.attr('class', imgClass+' replaced-svg');
+    }
+    $svg = $svg.removeAttr('xmlns:a');
+    if(!$svg.attr('viewBox') && $svg.attr('height') && $svg.attr('width')) {
+      $svg.attr('viewBox', '0 0 ' + $svg.attr('height') + ' ' + $svg.attr('width'))
+    }
+    $img.replaceWith($svg);
+  }, 'xml');
+});
+</script>
 <!-- Optional JavaScript -->
 <!-- jQuery first, then Popper.js, then Bootstrap JS -->
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>

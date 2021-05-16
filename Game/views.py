@@ -141,6 +141,7 @@ def next_step(request, play):
             id_actives.remove(1)
             if st_only:
                 id_actives += [6]
+        print(day)
         actives = [i for i in Active.objects.all() if i.Id in id_actives]
     except:
         raise Http404('Что-то пошло не так в make_chio')

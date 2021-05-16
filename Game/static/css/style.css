@@ -9,37 +9,48 @@ transform: translate(-50%, 0);
 .div_body{
     /*position: fixed;*/
     display: grid;
-    grid-template-rows: 85% 15%;
+    grid-template-rows: 90% 10%;
     grid-template-columns: repeat(3, 1fr);
-    justify-items: center;
-    /*width: 100vw;*/
+    grid-auto-columns: 1fr;
+    width: 100vw;
+    max-width: 600px;
     height: 100vh;
     justify-content: space-between;
     grid-template-areas:
             "meat meat meat"
             "knopki_invest knopki_top history"
 }
+@media all and (orientation: landscape), all and (min-width: 480px) {
+
+}
+
+
 .knopki_invest{
    grid-area: knopki_invest;
-    background-color: aqua;
+    /*background-color: aqua;*/
 }
 .knopki_history{
-    background-color: red;
+    /*background-color: red;*/
 
+}
+.greyed {
+  fill: #ababab;
+  width: 40px;
+  height: 40px;
 }
 .history{
     grid-area: history;
-    background-color: aqua;
+    /*background-color: aqua;*/
 }
 .knopki_top{
    grid-area: knopki_top;
-    background-color: #8660a9;
+    /*background-color: #8660a9;*/
 }
 
 .meat{
     overflow: auto;
     grid-area: meat;
-    background-color: #6e5334;
+    /*background-color: #6e5334;*/
 }
 /*@media all and (max-width: 575px) {*/
 /*.row {*/
@@ -53,9 +64,8 @@ transform: translate(-50%, 0);
 /*}*/
 /*}*/
 .table1{
-    table-layout: fixed;
-    width: 100%;
-    height: 10%;
+    position: center;
+    text-align: center;
 }
 .table2{
     table-layout: auto;}
@@ -65,8 +75,12 @@ transform: translate(-50%, 0);
 }
 
 .width_bottom {
-    width: 100%;
-    /*margin-bottom: 0;*/
+    width: 35%;
+    margin-top: 5%;
+    height: 50px;
+    position: relative;
+    justify-content: center;
+
 }
 .shape1{
     height: 220%;
@@ -119,3 +133,11 @@ font-weight: 450;
 
 .textulic{font-size: 12pt; color: slategrey}
 .textulic1{font-size: 14pt; color: slategrey}
+.verysmall{font-size: 8pt; color: slategrey; margin-right: 5% }
+.mard{    position: relative;
+    bottom: 40%; right: 66%}
+.mard1{    position: relative;
+    bottom: 40%;}
+.mard2{    position: relative;
+    bottom: 40%; left: 33%}
+.mard3{}
