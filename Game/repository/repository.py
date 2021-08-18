@@ -1,9 +1,9 @@
 # from .models import Player
 import numpy as np
-import  pandas as pd
+import pandas as pd
 
 
-class History(): # на страничку статистики выдается лист из историй конкретного юзера. В каждой: год,выбор, доходность
+class History():  # на страничку статистики выдается лист из историй конкретного юзера. В каждой: год,выбор, доходность
     def __init__(self, year, person, act_a, act_b, increase_a, increase_b):
         self.year = year
         self.person = person
@@ -24,9 +24,9 @@ class Factory:
     def delete_repo(self):
         self.repo = None
 
+
 import pandas as pd
 import numpy as np
-
 
 import pandas as pd
 import numpy as np
@@ -41,12 +41,12 @@ class InvestingOptions:
 
     def __init__(self, df: pd.DataFrame, year: int, educ_dohod: float,
                  inflation_rate: float, number_only: float,
-                 number_together: float):
+                 number_together: float, was_more_than_40: bool):
         self.data = df  # датафрейм с информацией по текущей игре
         self.choice_1 = "year_" + str(year) + '_1'
         self.choice_2 = "year_" + str(year) + '_2'
         self.prev_money_1 = 'asset_' + str(year - 1) + '_1'
-        self.prev_money_2 = 'asset_' + str(year - 1) + '_1'
+        self.prev_money_2 = 'asset_' + str(year - 1) + '_2'
         self.future_money_1 = 'asset_' + str(year) + '_1'
         self.future_money_2 = 'asset_' + str(year) + '_2'
         self.educ = educ_dohod
@@ -54,7 +54,8 @@ class InvestingOptions:
         self.stock_only_ratio = number_only  # коэффициент участников для акции с отрицательной бетой
         self.stock_together_ratio = number_together  # коэффициент участников для акции роста
         self.year = year
-        self.was_more_than_40 = False
+        self.was_more_than_40 = was_more_than_40
+        self.checker = False
 
     def bank(self, indexes,
              mon_fut, mon_prev, flag=0):
@@ -77,24 +78,27 @@ class InvestingOptions:
     def korp_bond(self, indexes,
                   mon_fut, mon_prev, flag=0):
         scalar_value = np.random.choice(a=[0.035, 0, -0.01], p=[0.25, 0.5, 0.25])
-        array_of_returns = np.array([1 + self.inflat + scalar_value] * len(self.data))
+
         self.data.loc[indexes, mon_fut] = self.data.loc[indexes, mon_prev] * (
-            array_of_returns) + self.data.loc[indexes, mon_prev] * self.educ * flag * self.data.loc[
+                1 + scalar_value + self.inflat) + self.data.loc[indexes, mon_prev] * self.educ * flag * self.data.loc[
                                               indexes, 'educ']
         return self
 
     def gov_bond(self, indexes, mon_fut,
                  mon_prev, flag=0):
         self.data.loc[indexes, mon_fut] = self.data.loc[indexes, mon_prev] * (
-                1 + self.inflat + 0.005) + self.data.loc[indexes, mon_prev] * self.educ * flag * self.data.loc[
+                1 + self.inflat) + self.data.loc[indexes, mon_prev] * self.educ * flag * self.data.loc[
                                               indexes, 'educ']
         return self
 
-    def education(self, indexes, mon_fut, mon_prev):
+    def education(self, indexes, mon_fut, mon_prev, flag=0):
         # поставь ограничение на 8-ой уровень образования
         self.data.loc[indexes, 'educ'] += 1
-        self.data.loc[self.data['educ'] > 4] = 4  # ограничение на образование
-        self.data.loc[indexes, mon_fut] = self.data.loc[indexes, mon_prev]
+        #self.data.loc[self.data['educ'] > 8, 'educ'] = 8  # ограничение на образование
+        self.data.loc[indexes, mon_fut] = self.data.loc[indexes, mon_prev] * (
+                1 + self.educ * flag * self.data.loc[
+                                              indexes, 'educ'])
+
         return self
 
     def stock_only(self, indexes, mon_fut,
@@ -125,33 +129,32 @@ class InvestingOptions:
         '''
         if not self.was_more_than_40:
             if self.year == 7:
-                market_premium = self.inflat + 0.005
+                market_premium = self.inflat + 0.030
             elif self.year == 8:
                 market_premium = self.inflat + 0.055
             elif self.year == 9:
                 market_premium = self.inflat + 0.115
-            elif self.year == 1:
+            elif self.year == 10:
                 market_premium = self.inflat + 0.155
-            if self.stock_together_ratio > 0.4:
+            if self.stock_together_ratio > 0.3:
                 market_premium = self.inflat - 0.325
-                self.was_more_than_40 = True
+                self.checker = True
         else:
             market_premium = self.inflat - 0.01
 
-        self.data.loc[indexes, mon_fut] = self.data.loc[indexes, mon_prev](1 + market_premium) + self.data.loc[
+        self.data.loc[indexes, mon_fut] = self.data.loc[indexes, mon_prev] * (1 + market_premium) + self.data.loc[
             indexes, mon_prev] * self.educ * flag * self.data.loc[
                                               indexes, 'educ']
         return self
 
     def stock_index(self, indexes, mon_fut, mon_prev, flag=0):
-        expected_return = 1 + self.inflat + 0.015
+        expected_return = 1 + self.inflat - 0.01
         '''
         ЭТО КАК РАЗ БАРСУЧИЙ СЛУЧАЙ
         нормальное распределение с матожиданием 4 и дисперсией 1. При этом дивы по дефолту 3
         '''
         scale = 0.01
-        vector_of_returns = np.array(
-            [np.random.normal(loc=expected_return, scale=scale)] * len(self.data))
+        vector_of_returns = 0.02 + np.random.normal(loc=expected_return, scale=scale)
         self.data.loc[indexes, mon_fut] = self.data.loc[indexes, mon_prev] * vector_of_returns + self.data.loc[
             indexes, mon_prev] * self.educ * flag * self.data.loc[
                                               indexes, 'educ']
@@ -196,7 +199,8 @@ class InvestingOptions:
         :return: self
         '''
         opportunities = self.data[year_column].unique()
-        option_dict = {'bank': self.bank, 'sosed': self.sosed,
+        option_dict = {'bank': self.bank,
+                       'sosed': self.sosed,
                        'korp_bond': self.korp_bond,
                        'gov_bond': self.gov_bond,
                        'stock_together': self.stock_together,
@@ -227,6 +231,8 @@ class InvestingOptions:
         '''
         self._accrue_money_(self.choice_1, self.prev_money_1, self.future_money_1)
         self._accrue_money_(self.choice_2, self.prev_money_2, self.future_money_2)
+        if self.checker:
+            self.was_more_than_40 = True
         return self.data
 
 
@@ -253,6 +259,7 @@ class Repository:
         self.data = data
         self.inflation = inflation_rate
         self.educ_dohod = educ_dohod
+        self.more_than_40 = False
 
     def Choice(self,
                year,  # номер года
@@ -280,8 +287,12 @@ class Repository:
         self.data[asset_1_is] = 0  # иницциализация нового значения актива 1 нулем
         self.data[asset_2_is] = 0  # иницциализация нового значения актива 2 нулем
 
-        N_together = self.data[self.data[choice_1] == "stock_together"][choice_1].count()
-        N_together += self.data[self.data[choice_2] == "stock_together"][choice_2].count()
+        asset_1_was = "asset_" + str(year-1) + '_1'
+        asset_2_was = "asset_" + str(year-1) + '_2'
+
+        N_together = self.data[self.data[choice_1] == "stock_together"][asset_1_was].sum()
+        N_together += self.data[self.data[choice_2] == "stock_together"][asset_2_was].sum()
+        N_together = N_together/self.data["TOTAL"].sum()
 
         N_only = self.data[self.data[choice_1] == "stock_only"][choice_1].count()
         N_only += self.data[self.data[choice_2] == "stock_only"][choice_2].count()
@@ -289,41 +300,44 @@ class Repository:
         gambling = InvestingOptions(self.data, year, educ_dohod=self.educ_dohod,
                                     inflation_rate=self.inflation,
                                     number_only=N_only / len(self.data),
-                                    number_together=N_together / len(self.data))
+                                    number_together=N_together,
+                                    was_more_than_40=self.more_than_40)
         new_data = gambling.accrue()
         self.data = new_data
         self.data["TOTAL"] = self.data[asset_1_is] + self.data[asset_2_is]
+        self.more_than_40 = gambling.was_more_than_40
         return self.data
 
-    def get_history(self, person_id):
-        stata = None
-        if self.data is not None:
-            stata = self.data.iloc[[person_id]]
-            print(stata.head())
-        list_history = []
-        # for i in range(stata.shape[1]
-        # cursor = 0
+#a = Factory()
 
-        return stata
+#game_1 = a.get_repository(np.arange(1, 4, 1))
 
-
-
-# a = Factory()
-#
-# game_1 = a.get_repository(np.arange(1, 4, 1))
-# # game_1.get_history(1)
-#
-# game_1.Choice(1,
-#               ["sosed" ,"education",'sosed'],
-#               ["bank", "education", "sosed"]
-#               )
+#for i in range(1, 7):
+#    game_1.Choice(i,
+#                  ["stock_index", "stock_index", 'stock_index'],
+#                  ["stock_index", "stock_index", "stock_index"]
+#                  )
+#    game_1.Gamble(i)
+#game_1.Choice(7,
+#              ["stock_together" ,"stock_index",'stock_index'],
+#              ["stock_index", "stock_index", "stock_index"]
+#              )
 # game_1.Choice(1,
 #               ["" ,"",'',"",''],
 #               ["", "", "","",'']
 #               )
-# print(game_1.data)
-# game_1.Gamble(1)
-# print(game_1.data)
+#game_1.Gamble(7)
+
+#game_1.Choice(8,
+#              ["stock_together" ,"stock_index",'stock_index'],
+#              ["stock_index", "stock_index", "stock_index"]
+#             )
+#game_1.Gamble(8)
+#game_1.Choice(2,
+              # ["korp_bond" ,"korp_bond",'korp_bond'],
+              # ["korp_bond", "korp_bond", "korp_bond"]
+              # )
+#game_1.Gamble(2)
 # print(game_1.data.iloc[1])
 #
 # print(list(game_1.data.iloc[1]))
