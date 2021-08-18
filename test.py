@@ -1,4 +1,17 @@
+import csv, sys, os
+import os
+from datetime import datetime
 
+dir_path = os.path.dirname(os.path.realpath(__file__))
+project_dir = dir_path + '/finalGame'
+sys.path.append(project_dir)
+os.environ['DJANGO_SETTINGS_MODULE'] = 'settings'
+import django
+
+django.setup()
+from Game.models import Player
+a = Player.objects.all()
+print(a)
 # class Host:
 #     def __init__(self):
 #         pass

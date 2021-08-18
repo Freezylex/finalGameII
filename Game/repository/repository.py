@@ -1,8 +1,20 @@
-# from .models import Player
+
 import numpy as np
 import pandas as pd
+import csv, sys, os
+import os
+from datetime import datetime
+
+dir_path = os.path.dirname(os.path.realpath(__file__))
+project_dir = dir_path[:-16] + '/finalGame'
+sys.path.append(project_dir)
+os.environ['DJANGO_SETTINGS_MODULE'] = 'settings'
+import django
+
+django.setup()
 
 
+from Game.models import Player, Factor, Admin
 class History():  # на страничку статистики выдается лист из историй конкретного юзера. В каждой: год,выбор, доходность
     def __init__(self, year, person, act_a, act_b, increase_a, increase_b):
         self.year = year
@@ -308,10 +320,10 @@ class Repository:
         self.more_than_40 = gambling.was_more_than_40
         return self.data
 
-#a = Factory()
+a = Factory()
 
-#game_1 = a.get_repository(np.arange(1, 4, 1))
-
+game_1 = a.get_repository(np.arange(1, 4, 1))
+print(game_1.data)
 #for i in range(1, 7):
 #    game_1.Choice(i,
 #                  ["stock_index", "stock_index", 'stock_index'],
