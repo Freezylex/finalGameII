@@ -80,6 +80,8 @@ class InvestingOptions:
                 1 + self.inflat - 0.005) + self.data.loc[indexes, mon_prev] * self.educ * flag * self.data.loc[
                                               indexes, 'educ']
         return self
+    def bank_personal_mode(self, mon_prev: float, player: Player,  flag=0): # TODO implement this funk to preexecute mode
+        return mon_prev * (1 + self.inflat - 0.005) + mon_prev * self.educ * flag * player.Education
 
     def korp_bond(self, indexes,
                   mon_fut, mon_prev, flag=0):
