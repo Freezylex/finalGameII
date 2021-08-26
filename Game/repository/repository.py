@@ -1,6 +1,4 @@
 
-import numpy as np
-import pandas as pd
 import csv, sys, os
 import os
 from datetime import datetime
@@ -32,13 +30,9 @@ class Factory:
     def get_repository(self, id_):
         self.repo = self.repo or Repository(id_)
         return self.repo
-
-    def delete_repo(self):
-        self.repo = None
-
-
-import pandas as pd
-import numpy as np
+    #
+    # def delete_repo(self):
+    #     self.repo = None
 
 import pandas as pd
 import numpy as np
@@ -250,7 +244,7 @@ class InvestingOptions:
 
 class Repository:
 
-    def __init__(self, id_, inflation_rate=0.045, educ_dohod=0.005):
+    def __init__(self, id_, year=None, inflation_rate=0.045, educ_dohod=0.005):
         '''
 
         Базовое правило в названии колонок: сначала ГОД, потом номер актива
@@ -258,16 +252,16 @@ class Repository:
         :param id_: айдишники игроков
         :param inflation_rate: базовая цифра, от которой отталкиваются дальнейшие проценты - уровень инфляции
         '''
-        id_ = np.array(id_)
-        self.id_ = id_
-        data = pd.DataFrame({"id": id_})  # инициализация id
-        data["TOTAL"] = 200
-        data["educ"] = 0
-        data["educ_nakop"] = 0
-        data["asset_0_1"] = 100  # инициализация актива 1
-        data["asset_0_2"] = 100  # инициализация актива 2
+        a = Player.objects.all() or [Player(Name='TestUser')]
+        self.id_ = [i.ID for i in a]
+        year = list(Admin.objects.all())[-1:][0].Day - 2
+        data = pd.DataFrame({"id": self.id_})  # инициализация id
+        data["TOTAL"] = [i.SumActive() for i in a]
+        data["educ"] = [i.Education for i in a] # TODO возможно, нужно удалить, так как это больше нигде не используется
+        data["educ_nakop"] = [i.Education for i in a]
+        data[f"asset_{year}_1"] = [i.Active_a for i in a]  # инициализация актива 1
+        data[f"asset_{year}_2"] = [i.Active_b for i in a]  # инициализация актива 2
         data = data.set_index("id")  # смена индекса на id
-
         self.data = data
         self.inflation = inflation_rate
         self.educ_dohod = educ_dohod
@@ -321,7 +315,8 @@ class Repository:
         return self.data
 
 a = Factory()
-
+# Player(Name='Vasya3').save()
+# Player(Name='Vasya2').save()
 game_1 = a.get_repository(np.arange(1, 4, 1))
 print(game_1.data)
 #for i in range(1, 7):
@@ -334,12 +329,12 @@ print(game_1.data)
 #              ["stock_together" ,"stock_index",'stock_index'],
 #              ["stock_index", "stock_index", "stock_index"]
 #              )
-# game_1.Choice(1,
+# game_1.Choice(3,
 #               ["" ,"",'',"",''],
 #               ["", "", "","",'']
 #               )
-#game_1.Gamble(7)
-
+# game_1.Gamble(3)
+# print(game_1.data)
 #game_1.Choice(8,
 #              ["stock_together" ,"stock_index",'stock_index'],
 #              ["stock_index", "stock_index", "stock_index"]

@@ -14,22 +14,30 @@
     <link rel="stylesheet" href="../../static/css/style.css">
     <title>Economic Game</title>
 </head>
-<body>
-<form class="authorizepage" action="{%  url 'user_page:to_personal_page'%}" method="post">
+<body class="bodyauth">
+<div id="divauty">
+    <div class="n">
+            <div class="ror">
+                <div class="logo rerur"></div>
+                <form  id="rer" action="{%  url 'user_page:to_personal_page'%}" method="post">
 
-    {% csrf_token %}
-    <p>
-    <input type="text" name="user" placeholder="Your Name">
-    </p>
-    <p>
-    <button type=submit class="btn btn-dark width_bottom shape1">Вход</button>
-    </p>
-</form>
+                    {% csrf_token %}
+                    <input class="re" type="text" name="user" placeholder="Your Name">
+                    <button type=submit class="btn btn-dark width_bottom shapee">Вход</button>
+                </form>
+        </div>
+    </div>
+</div>
 
 <!-- Optional JavaScript -->
 <!-- jQuery first, then Popper.js, then Bootstrap JS -->
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
+<script>
+$("input").on("keydown", function (e) {
+    return e.which !== 32;
+});
+</script>
 </body>
 </html>

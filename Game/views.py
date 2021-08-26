@@ -192,11 +192,12 @@ def make_choice(request, player_name):  # игроком нажата клави
                                                       'actives': actives, 'rating': rating})
 
 
-factory = Factory()
+# factory = Factory()
 
 
 def next_day_admin(request, year):
     try:
+        factory = Factory()
         empty_choice = 'sosed'
         flag = True
         day = list(Admin.objects.all())[-1:][0].Day  # Получаем текущий день от админа
@@ -208,7 +209,6 @@ def next_day_admin(request, year):
         if int(year) == 400:  # если нажата кнопка превести всех пользователей в состояние по-умлочанию
             newday = Admin(Day=1)  # сохраняем день на 1
             newday.save()
-            players = Player.objects.annotate(s=F('Active_a') + F('Active_b')).order_by('-s')
             for i in players:
                 i.obnulit()  # у всех игроков тоже обнуляем день и активы по умолчанию
                 i.save()
@@ -218,10 +218,7 @@ def next_day_admin(request, year):
             return render(request, "player/AdminPage.html", {'user_factors': user_factors, 'actives': actives,
                                                              'players': players, 'day': day})
         if int(year) == 500:  # если нажата кнопка удалить всех пользователей
-            players = Player.objects.all()  # удаляем пользователей
-            players.delete()
-            factory.delete_repo()
-            players = Player.objects.all()
+            players.delete()  # удаляем пользователей
             Admin(Day=day1).save()  # день сохраняем текущий
             return render(request, "player/AdminPage.html", {'user_factors': user_factors, 'actives': actives,
                                                              'players': players, 'day': day1})
