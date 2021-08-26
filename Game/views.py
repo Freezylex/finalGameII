@@ -239,10 +239,16 @@ def next_day_admin(request, year):
             if day == 0:  # нельзя уходить в отрицуательные значения - мб добавить что
                 day += 1
             new_day = Admin(Day=day - 1)
+            for player in players:
+                player.one_year_back()
+                player.save()
+            fact_del = Factor.objects.filter(Day__gte=day)
+            fact_del.delete()
         else:
             new_day = Admin(Day=day + 1)
         new_day.save()  # просто меняем день на новый
         day = new_day.Day
+
 
         # now make calculations:
         if int(year) != 1000 and int(year) != 0:  # если нажата кнопка следующий год

@@ -88,6 +88,19 @@ class Player(models.Model):
         self.History = '[200]'
         return 1
 
+    def one_year_back(self):
+        self.Day -= 1
+        new = json.loads(self.History)
+        self.Active_a = self.Active_a_pred
+        self.Active_b = self.Active_b_pred
+        if len(new) < 3:
+            i = 0
+        else:
+            i = -3
+        self.Active_a_pred = new[i] // 2
+        self.Active_b_pred = new[i] // 2
+        self.History = json.dumps(new[:-1])
+
 
 class Active(models.Model):
     Id = models.AutoField(primary_key=True)

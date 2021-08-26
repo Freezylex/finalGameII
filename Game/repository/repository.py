@@ -254,7 +254,12 @@ class Repository:
         '''
         a = Player.objects.all() or [Player(Name='TestUser')]
         self.id_ = [i.ID for i in a]
-        year = list(Admin.objects.all())[-1:][0].Day - 2
+        aa = Admin.objects.all()
+        if len(aa) == 0:
+            year = 0
+            Admin(Day=2).save()
+        else:
+            year = list(Admin.objects.all())[-1:][0].Day - 2
         data = pd.DataFrame({"id": self.id_})  # инициализация id
         data["TOTAL"] = [i.SumActive() for i in a]
         data["educ"] = [i.Education for i in a] # TODO возможно, нужно удалить, так как это больше нигде не используется
@@ -314,11 +319,11 @@ class Repository:
         self.more_than_40 = gambling.was_more_than_40
         return self.data
 
-a = Factory()
+# a = Factory()
 # Player(Name='Vasya3').save()
 # Player(Name='Vasya2').save()
-game_1 = a.get_repository(np.arange(1, 4, 1))
-print(game_1.data)
+# game_1 = a.get_repository(np.arange(1, 4, 1))
+# print(game_1.data)
 #for i in range(1, 7):
 #    game_1.Choice(i,
 #                  ["stock_index", "stock_index", 'stock_index'],
