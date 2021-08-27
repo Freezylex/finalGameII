@@ -80,9 +80,16 @@ class InvestingOptions:
                 1 + self.inflat - 0.005) + self.data.loc[indexes, mon_prev] * self.educ * flag * self.data.loc[
                                               indexes, 'educ']
         return self
-    def bank_personal_mode(self, mon_prev: float, player: Player,  flag=0): # TODO implement this funk to preexecute mode
-        return mon_prev * (1 + self.inflat - 0.005) + mon_prev * self.educ * flag * player.Education
 
+    def bank_pm(self, mon_prev: float, player: Player,  flag=0): # TODO implement this funk to preexecute mode
+        return mon_prev * (1 + self.inflat - 0.005) + mon_prev * self.educ * flag * player.Education
+    def gov_bond_pm(self, mon_prev: float, player: Player, flag = 0):
+        scalar_value = np.random.choice(a=[0.035, 0, -0.01], p=[0.25, 0.5, 0.25])
+        return mon_prev * (1 + scalar_value + self.inflat) + mon_prev * self.educ * flag * player.Education
+    def education_pm(self, mon_prev: float, player: Player, flag=0):
+        player.Education += 1
+        player.save()
+        return mon_prev * ( 1 +player.Education * flag * self.educ )
     def korp_bond(self, indexes,
                   mon_fut, mon_prev, flag=0):
         scalar_value = np.random.choice(a=[0.035, 0, -0.01], p=[0.25, 0.5, 0.25])
