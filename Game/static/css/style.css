@@ -1,7 +1,8 @@
 .button1{
-position: relative;
-left: 50%;
-transform: translate(-50%, 0);
+    position: relative;
+    left: 50%;
+    transform: translate(-50%, 0);
+
 }
 .n{
     display: flex;
@@ -32,6 +33,9 @@ transform: translate(-50%, 0);
     padding: 16px;
     border-radius: 5px;
     background-color: rgb(255, 255, 255);
+}
+.btn{
+    /*color: cornflowerblue;*/
 }
 .body_ch{
     overflow: hidden;
@@ -243,3 +247,31 @@ font-weight: 450;
 .mard2{    position: relative;
     bottom: 40%; left: 0}
 .mard3{}
+
+.popup {
+    width: 100%;
+    height: 100%;
+    background-color: #924646;
+    top: 0;
+    left: 0;
+}
+
+.popup__body {
+    min-height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #924646;
+}
+
+.popup__content {
+}
+
+.popup__close {
+}
+
+.popup__title {
+}
+
+.popup__text {
+}

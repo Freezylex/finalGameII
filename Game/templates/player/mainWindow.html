@@ -12,7 +12,6 @@
     <link rel="stylesheet" href="../../static/css/style.css">
     <title>Economic Game</title>
 </head>
-<body class="body_ch">
 <div class="div_body">
 <div class="div_body__item meat custom-control">
 {% if player %}
@@ -22,9 +21,9 @@
 {% endif %}
 <table class="table">
     <tr class="dff">
-        <th>Актив A <br> {{ player.Active_a }} </th>
-        <th>Капитал <br> <a class="df">{{ player.SumActive }}({{ player.SumActive_percentage_increase }})</a></th>
-        <th>Актив Б <br> {{ player.Active_b }} </th>
+        <th><br> Ваш капитал </th>
+        <th><br> <a class="df">{{ player.SumActive }}</a></th>
+        <th><br> ({{ player.SumActive_percentage_increase }})</th>
     </tr>
 </table>
 <table class="table table1">
@@ -52,6 +51,7 @@
             <th>Инвестиции</th>
             <th class="first_knopka">A</th>
             <th class="first_knopka">Б</th>
+            <th class="first_knopka">С</th>
         </tr>
         {% for active in actives %}
         <tr>
@@ -69,16 +69,22 @@
                     <input  class="form-check-input big-checkbox" type="radio" name="activeB" value="{{ active.Name }}" />
                 </label>
             </td>
+                    <td class="first_knopka">
+                <label class="labelcustom">
+                    hkj
+                    <input  class="form-check-input big-checkbox" type="radio" name="activeС" value="{{ active.Name }}" />
+                </label>
+            </td>
         </tr>
         {% endfor %}
     </table>
     <p>
-    <button class="btn btn-secondary button1">Подтвердить выбор</button>
+    <button class="btn btn-primary button1">Подтвердить выбор</button>
     </p>
 </form>
 <form action="{%  url 'user_page:next_step' player.Name %}" method="post">
                 {% csrf_token %}
-                <button class="btn button1 btn-outline-dark ">Обновить страничку</button>
+                <button class="btn button1 btn-outline-primary ">Обновить страничку</button>
 </form>
 </div>
 <div class="div_body__item knopki_invest custom-control">
@@ -100,6 +106,58 @@
     </form>
 </div>
 </div>
+<div class="popup" id="popup">
+    <div class="popup__body">
+        <div class="popup__content">
+            <a class="popup__close" href="">Подтвердить выбор</a>
+            <div class="popup__title">
+                <a>Заголовок</a>
+                <p>Описание</p>
+            </div>
+            <div class="popup__text">
+                <table>
+                    <tr>
+                        <td class="first_knopka">
+                            <label class="labelcustom">
+                                hjk
+                                <input class="form-check-input big-checkbox" type="radio" name="choice1" value="1" />
+                            </label>
+                        </td>
+                        <td>Вариант 1</td>
+                    </tr>
+                    <tr>
+                        <td class="first_knopka">
+                            <label class="labelcustom">
+                                hjk
+                                <input class="form-check-input big-checkbox" type="radio" name="choice" value="2" />
+                            </label>
+                        </td>
+                        <td>Вариант 2</td>
+                    </tr>
+                                        <tr>
+                        <td class="first_knopka">
+                            <label class="labelcustom">
+                                hjk
+                                <input class="form-check-input big-checkbox" type="radio" name="choice" value="3" />
+                            </label>
+                        </td>
+                        <td>Вариант 3</td>
+                    </tr>
+                    <tr>
+                        <td class="first_knopka">
+                            <label class="labelcustom">
+                                hjk
+                                <input class="form-check-input big-checkbox" type="radio" name="choice" value="4" />
+                            </label>
+                        </td>
+                        <td>Вариант 4</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+
+</div>
 <script>
 
         (function() {
@@ -109,7 +167,7 @@
             console.log(flag[0])
             if (flag[0] === "+")
             {
-                ct.color = "rgb(0,183,10)";
+                ct.color = "rgb(43,92,239)";
             }
             else{
                 ct.color = "rgba(190,17,17,0.8)";

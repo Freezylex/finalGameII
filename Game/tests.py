@@ -1,3 +1,4 @@
+from django.db.models import F
 from django.test import TestCase
 # from .models import Player
 # Create your tests here.
@@ -16,29 +17,37 @@ from Game.models import Player, Active, Factor, Admin
 from Game.repository.repository import Repository, Factory
 import numpy as np
 
-# player = Player(Name='Aleks 120')
 # print(player.Active_a)
 # player.save()
-# player = Player.objects.get(Name='Aleks 120')
+
+# players = Player.objects.annotate(s=F('Active_a') + F('Active_b') + F('Active_c')).order_by('s').reverse()
+# print('asd')
+# print(list([i.s for i in players].))
+# players = Player.objects.all().order_by('SumActive')
 # print(player.get_history())
 # player.append_to_history(205)
 # print(player.get_history())
-# print(player.Active_a)
+# print(players)
 # print(Player.objects.get(Name='Aleks 120').Active_a)
 # print(Player.objects.order_by('-Active_a', 'Active_b'))
 # players = Player.objects.all()
 # print(Player.objects.all())
 # Player.objects.all().delete()
-
-
+# j = Player(Name='John', ID=1)
+# print(j.Active_c)
+# print(j.Active_c_pred)
+# print(j.percentage_increase_active_с())
+# a = Factor.objects.all()[0]
 # game_1 = Repository(np.arange(1,4,1))
+# print(game_1)
 # print(game_1.data)
-# game_1.choice(1,
-#            ["bank","bank","sosed"],
-#            ["bank","sosed","sosed"]
+# game_1.Choice(1,
+#            ["bank","bank","bank","bank","bank"],
+#            ["bank","bank","bank","bank","bank",],
+#            ["bank","bank","bank","bank","bank",]
 #            )
-#
-# print(game_1.gamble(1))
+# #
+# print(game_1.Gamble(1))
 
 
 # k = ['Банк', 'Стартап Соседа', 'Образование', 'Гособлигации'

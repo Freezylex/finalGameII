@@ -11,6 +11,8 @@ class Player(models.Model):
     Active_a_pred = models.FloatField('active_a', default=100, null=False)
     Active_b = models.FloatField('active_b', default=100, null=False)
     Active_b_pred = models.FloatField('active_b', default=100, null=False)
+    Active_c = models.FloatField('active_c', default=100, null=False)
+    Active_c_pred = models.FloatField('active_c', default=100, null=False)
     Education = models.IntegerField('education', default=0)
     Day = models.IntegerField('day', default=1, null=False)
     History = models.CharField('history', max_length=400, null=False, default='[200]')
@@ -33,14 +35,16 @@ class Player(models.Model):
         return day == self.Day  # текущий день. Возможно, можно поставить и день - 1
 
     def SumActive(self):
-        return self.Active_a + self.Active_b
+        return self.Active_a + self.Active_b + self.Active_c
 
-    def NextYear(self, a, b):
+    def NextYear(self, a, b, c):
         self.Day += 1
         self.Active_a_pred = self.Active_a
         self.Active_b_pred = self.Active_b
+        self.Active_c_pred = self.Active_c
         self.Active_a = a
         self.Active_b = b
+        self.Active_c = c
         self.append_to_history(self.SumActive())
 
     def percentage_increase_active_a(self):
@@ -59,6 +63,15 @@ class Player(models.Model):
             output = f"{round(100 * res, 2)}%"
         return output
 
+    def percentage_increase_active_c(self):
+        res = (-self.Active_c_pred + self.Active_c) / self.Active_c_pred
+        if res >= 0:
+            output = f"+{round(100 * res, 2)}%"
+        else:
+            output = f"{round(100 * res, 2)}%"
+        return output
+
+
     def education(self):
         if self.Education == 0:
             return '0'
@@ -70,8 +83,9 @@ class Player(models.Model):
             return f'{self.Education}'
 
     def SumActive_percentage_increase(self):
-        res = (self.Active_a + self.Active_b - self.Active_a_pred - self.Active_b_pred) / (
-                    self.Active_a_pred + self.Active_b_pred)
+        res = (self.Active_a + self.Active_b - self.Active_a_pred - self.Active_b_pred + self.Active_c
+               - self.Active_c_pred) / (
+                    self.Active_a_pred + self.Active_b_pred + self.Active_c_pred)
         if res >= 0:
             output = f"+{round(100 * res, 2)} %"
         else:
@@ -83,7 +97,9 @@ class Player(models.Model):
         self.Active_a_pred = 100
         self.Active_a = 100
         self.Active_b = 100
+        self.Active_c = 100
         self.Active_b_pred = 100
+        self.Active_c_pred = 100
         self.Education = 0
         self.History = '[200]'
         return 1
@@ -93,12 +109,14 @@ class Player(models.Model):
         new = json.loads(self.History)
         self.Active_a = self.Active_a_pred
         self.Active_b = self.Active_b_pred
+        self.Active_c = self.Active_c_pred
         if len(new) < 3:
             i = 0
         else:
             i = -3
-        self.Active_a_pred = new[i] // 2
-        self.Active_b_pred = new[i] // 2
+        self.Active_a_pred = new[i] // 3
+        self.Active_b_pred = new[i] // 3
+        self.Active_c_pred = new[i] // 3
         self.History = json.dumps(new[:-1])
 
 
@@ -114,13 +132,16 @@ class Active(models.Model):
 class Factor(models.Model):
     Name1 = models.ForeignKey(Active, on_delete=models.CASCADE, null=True, related_name='active_a')
     Name2 = models.ForeignKey(Active, on_delete=models.CASCADE, null=True, related_name='active_b')
+    Name3 = models.ForeignKey(Active, on_delete=models.CASCADE, null=True, related_name='active_c')
     Day = models.IntegerField('day', null=False)
     UserID = models.ForeignKey(Player, on_delete=models.CASCADE, null=False)
     ActA_increase = models.CharField('actAinc', max_length=10, null=True, default="обрабатывается")
     ActB_increase = models.CharField('actBinc', max_length=10, null=True, default="обрабатывается")
+    ActC_increase = models.CharField('actCinc', max_length=10, null=True, default="обрабатывается")
 
     def __str__(self):
-        return str(self.Day) + ' ' + str(self.UserID) + ' ' + str(self.Name1) + ' ' + str(self.Name2)
+        return str(self.Day) + ' ' + str(self.UserID) + ' ' + str(self.Name1) + ' ' + str(self.Name2) \
+               + ' ' + str(self.Name3)
 
 
 class Admin(models.Model):
