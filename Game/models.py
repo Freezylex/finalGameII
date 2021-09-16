@@ -15,7 +15,7 @@ class Player(models.Model):
     Active_c_pred = models.FloatField('active_c', default=100, null=False)
     Education = models.IntegerField('education', default=0)
     Day = models.IntegerField('day', default=1, null=False)
-    History = models.CharField('history', max_length=400, null=False, default='[200]')
+    History = models.CharField('history', max_length=400, null=False, default='[300]')
 
     class Meta:
         verbose_name = 'Игрок'

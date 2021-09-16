@@ -30,7 +30,7 @@ def to_MainWindow(request, player):
         rating = list(players).index(player) + 1
         day = player.Day
         len_rating = len(players)
-        id_actives = [0, 1, 2]
+        id_actives = [0, 1, 2, 8]
         if day >= 4:
             id_actives += [3, 4]
         if day > 6:
@@ -133,12 +133,12 @@ def next_step(request, play):
         if player.Day == flag:
             pass
         len_rating = len(players)
-        id_actives = [0, 1, 2]
+        id_actives = [0, 1, 2, 8]
         if day >= 4:
             id_actives += [3, 4]
         if day > 6:
             id_actives += [5, 7]
-            id_actives.remove(1)
+            # id_actives.remove(1)
             if st_only:
                 id_actives += [6]
         print(day)
@@ -162,7 +162,7 @@ def make_choice(request, player_name):  # игроком нажата клави
         rating = list(players).index(player) + 1
         ##
         len_rating = len(players)
-        id_actives = [0, 1, 2]
+        id_actives = [0, 1, 2, 8]
         if day >= 4:
             id_actives += [3, 4]
         if day > 6:
