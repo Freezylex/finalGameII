@@ -16,6 +16,9 @@ class Player(models.Model):
     Education = models.IntegerField('education', default=0)
     Day = models.IntegerField('day', default=1, null=False)
     History = models.CharField('history', max_length=400, null=False, default='[300]')
+    Mortgage_count = models.IntegerField('mortgage_count', default=0)
+    Further_mortgage = models.IntegerField('further_mortgage', default=0)
+    Now_mortgage = models.IntegerField('now_mortgage', default=0)
 
     class Meta:
         verbose_name = 'Игрок'
@@ -35,20 +38,27 @@ class Player(models.Model):
         return day == self.Day  # текущий день. Возможно, можно поставить и день - 1
 
     def SumActive(self):
-        return self.Active_a + self.Active_b + self.Active_c
+        return round(self.Active_a + self.Active_b + self.Active_c, 2)
 
-    def NextYear(self, a, b, c):
+    def actives_pred(self):
+        return round((self.Active_c_pred + self.Active_a_pred + self.Active_b_pred) / 3, 4)
+
+    def NextYear(self, a, b, c, e, f, g, d):
         self.Day += 1
+        self.Mortgage_count = e
+        self.Further_mortgage = f
+        self.Now_mortgage = g
         self.Active_a_pred = self.Active_a
         self.Active_b_pred = self.Active_b
         self.Active_c_pred = self.Active_c
         self.Active_a = a
         self.Active_b = b
         self.Active_c = c
+        self.Education = d
         self.append_to_history(self.SumActive())
 
     def percentage_increase_active_a(self):
-        res = (-self.Active_a_pred + self.Active_a) / self.Active_a_pred
+        res = (-self.actives_pred() + self.Active_a) / self.Active_a_pred
         if res >= 0:
             output = f"+{round(100 * res, 2)}%"
         else:
@@ -56,7 +66,7 @@ class Player(models.Model):
         return output
 
     def percentage_increase_active_b(self):
-        res = (-self.Active_b_pred + self.Active_b) / self.Active_b_pred
+        res = (-self.actives_pred() + self.Active_b) / self.Active_b_pred
         if res >= 0:
             output = f"+{round(100 * res, 2)}%"
         else:
@@ -64,7 +74,7 @@ class Player(models.Model):
         return output
 
     def percentage_increase_active_c(self):
-        res = (-self.Active_c_pred + self.Active_c) / self.Active_c_pred
+        res = (-self.actives_pred() + self.Active_c) / self.Active_c_pred
         if res >= 0:
             output = f"+{round(100 * res, 2)}%"
         else:

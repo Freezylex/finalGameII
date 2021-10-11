@@ -35,6 +35,7 @@ import numpy as np
 # Player.objects.all().delete()
 # j = Player(Name='John', ID=1)
 # print(j.Active_c)
+Player.objects.all().delete()
 # print(j.Active_c_pred)
 # print(j.percentage_increase_active_с())
 # a = Factor.objects.all()[0]

@@ -12,21 +12,21 @@
     <link rel="stylesheet" href="../../static/css/style.css">
     <title>Economic Game</title>
 </head>
-<div class="div_body">
-<div class="div_body__item meat custom-control">
+<body>
 {% if player %}
     <h3 class="lead heading">{{player.Name}}</h3>
 {% else %}
     <h3 class="lead heading">не найдено</h3>
 {% endif %}
-<table class="table">
+<hr id="polo" color="blue">
+<table class="table table-borderless table1 ">
     <tr class="dff">
         <th><br> Ваш капитал </th>
-        <th><br> <a class="df">{{ player.SumActive }}</a></th>
-        <th><br> ({{ player.SumActive_percentage_increase }})</th>
+        <th><br> <a2 class="df">{{ player.SumActive }}</a2></th>
+        <th id="percent"><br> ({{ player.SumActive_percentage_increase }})</th>
     </tr>
 </table>
-<table class="table table1">
+<table class="table table-borderless table1">
     <tr>
         <td>Место в топе:</td>
         <td>{{ rating }}/{{ len_rating }}</td>
@@ -79,7 +79,7 @@
         {% endfor %}
     </table>
     <p>
-    <button class="btn btn-primary button1">Подтвердить выбор</button>
+    <button class="btn btn-blue button1">Подтвердить выбор</button>
     </p>
 </form>
 <form action="{%  url 'user_page:next_step' player.Name %}" method="post">
@@ -87,6 +87,7 @@
                 <button class="btn button1 btn-outline-primary ">Обновить страничку</button>
 </form>
 </div>
+<div id="knopki_div">
 <div class="div_body__item knopki_invest custom-control">
     <form action="{%  url 'user_page:to_MainWindow' player.Name%}" method="post">
             {% csrf_token %}
@@ -106,58 +107,62 @@
     </form>
 </div>
 </div>
-<div class="popup" id="popup">
-    <div class="popup__body">
-        <div class="popup__content">
-            <a class="popup__close" href="">Подтвердить выбор</a>
-            <div class="popup__title">
-                <a>Заголовок</a>
-                <p>Описание</p>
-            </div>
-            <div class="popup__text">
-                <table>
-                    <tr>
-                        <td class="first_knopka">
-                            <label class="labelcustom">
-                                hjk
-                                <input class="form-check-input big-checkbox" type="radio" name="choice1" value="1" />
-                            </label>
-                        </td>
-                        <td>Вариант 1</td>
-                    </tr>
-                    <tr>
-                        <td class="first_knopka">
-                            <label class="labelcustom">
-                                hjk
-                                <input class="form-check-input big-checkbox" type="radio" name="choice" value="2" />
-                            </label>
-                        </td>
-                        <td>Вариант 2</td>
-                    </tr>
-                                        <tr>
-                        <td class="first_knopka">
-                            <label class="labelcustom">
-                                hjk
-                                <input class="form-check-input big-checkbox" type="radio" name="choice" value="3" />
-                            </label>
-                        </td>
-                        <td>Вариант 3</td>
-                    </tr>
-                    <tr>
-                        <td class="first_knopka">
-                            <label class="labelcustom">
-                                hjk
-                                <input class="form-check-input big-checkbox" type="radio" name="choice" value="4" />
-                            </label>
-                        </td>
-                        <td>Вариант 4</td>
-                    </tr>
-                </table>
-            </div>
-        </div>
-    </div>
-
+<div id="admin_rename">
+    dfjkl
 </div>
+</div>
+{#<div class="popup" id="popup">#}
+{#    <div class="popup__body">#}
+{#        <div class="popup__content">#}
+{#            <a class="popup__close" href="">Подтвердить выбор</a>#}
+{#            <div class="popup__title">#}
+{#                <a>Заголовок</a>#}
+{#                <p>Описание</p>#}
+{#            </div>#}
+{#            <div class="popup__text">#}
+{#                <table>#}
+{#                    <tr>#}
+{#                        <td class="first_knopka">#}
+{#                            <label class="labelcustom">#}
+{#                                hjk#}
+{#                                <input class="form-check-input big-checkbox" type="radio" name="choice1" value="1" />#}
+{#                            </label>#}
+{#                        </td>#}
+{#                        <td>Вариант 1</td>#}
+{#                    </tr>#}
+{#                    <tr>#}
+{#                        <td class="first_knopka">#}
+{#                            <label class="labelcustom">#}
+{#                                hjk#}
+{#                                <input class="form-check-input big-checkbox" type="radio" name="choice" value="2" />#}
+{#                            </label>#}
+{#                        </td>#}
+{#                        <td>Вариант 2</td>#}
+{#                    </tr>#}
+{#                                        <tr>#}
+{#                        <td class="first_knopka">#}
+{#                            <label class="labelcustom">#}
+{#                                hjk#}
+{#                                <input class="form-check-input big-checkbox" type="radio" name="choice" value="3" />#}
+{#                            </label>#}
+{#                        </td>#}
+{#                        <td>Вариант 3</td>#}
+{#                    </tr>#}
+{#                    <tr>#}
+{#                        <td class="first_knopka">#}
+{#                            <label class="labelcustom">#}
+{#                                hjk#}
+{#                                <input class="form-check-input big-checkbox" type="radio" name="choice" value="4" />#}
+{#                            </label>#}
+{#                        </td>#}
+{#                        <td>Вариант 4</td>#}
+{#                    </tr>#}
+{#                </table>#}
+{#            </div>#}
+{#        </div>#}
+{#    </div>#}
+{##}
+{#</div>#}
 <script>
 
         (function() {
@@ -167,7 +172,7 @@
             console.log(flag[0])
             if (flag[0] === "+")
             {
-                ct.color = "rgb(43,92,239)";
+                ct.color = "blue";
             }
             else{
                 ct.color = "rgba(190,17,17,0.8)";

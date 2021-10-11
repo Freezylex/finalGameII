@@ -4,20 +4,24 @@
     transform: translate(-50%, 0);
 
 }
-.n{
-    display: flex;
-    flex: 1 1 0;
-    flex-direction: column;
-    -webkit-box-pack: center;
-    justify-content: center;
-    -webkit-box-align: center;
-    align-items: center;
+#polo{
+    margin: 2px;
+    margin-top: 2%;
 }
-.ror{
-    max-width: 320px;
-    /*background: aqua;*/
-    width: 100% !important;
-}
+/*.n{*/
+/*    display: flex;*/
+/*    flex: 1 1 0;*/
+/*    flex-direction: column;*/
+/*    -webkit-box-pack: center;*/
+/*    justify-content: center;*/
+/*    -webkit-box-align: center;*/
+/*    align-items: center;*/
+/*}*/
+/*.ror{*/
+/*    max-width: 320px;*/
+/*    !*background: aqua;*!*/
+/*    width: 100% !important;*/
+/*}*/
 
 #divauty {
     display: flex;
@@ -34,33 +38,51 @@
     border-radius: 5px;
     background-color: rgb(255, 255, 255);
 }
+#er{
+    justify-content: flex-end;
+}
 .btn{
     /*color: cornflowerblue;*/
 }
+#admin_rename{
+        width: 300px;
+        height: 50px;
+        text-align: center;
+        padding: 15px;
+        border: 3px solid #0000cc;
+        border-radius: 10px;
+        color: #0000cc;
+}
+
+#pop_ok{
+    display: none;
+}
+#pop_ok:target {display: block;}
+
 .body_ch{
     overflow: hidden;
 }
-.div_body{
-    /*position: fixed;*/
-    display: grid;
-    grid-template-rows: 90% 10%;
-    grid-template-columns: repeat(3, 1fr);
-    grid-auto-columns: 1fr;
-    width: 100vw;
-    max-width: 600px;
-    height: 87vh;
-    justify-content: space-between;
-    grid-template-areas:
-            "meat meat meat"
-            "knopki_invest knopki_top history"
-}
+/*.div_body{*/
+/*    !*position: fixed;*!*/
+/*    display: grid;*/
+/*    grid-template-rows: 90% 10%;*/
+/*    grid-template-columns: repeat(3, 1fr);*/
+/*    grid-auto-columns: 1fr;*/
+/*    width: 100vw;*/
+/*    max-width: 600px;*/
+/*    height: 87vh;*/
+/*    justify-content: space-between;*/
+/*    grid-template-areas:*/
+/*            "meat meat meat"*/
+/*            "knopki_invest knopki_top history"*/
+/*}*/
 @media all and (orientation: landscape), all and (min-width: 480px) {
 
 }
 
 
-.knopki_invest{
-    grid-area: knopki_invest;}
+/*.knopki_invest{*/
+/*    grid-area: knopki_invest;}*/
 
 .invest_logo{
     background: url("../hard/invest.svg") no-repeat top left;
@@ -97,16 +119,16 @@
     grid-area: history;
     /*background-color: aqua;*/
 }
-.knopki_top{
-   grid-area: knopki_top;
-    /*background-color: #8660a9;*/
-}
+/*.knopki_top{*/
+/*   grid-area: knopki_top;*/
+/*    !*background-color: #8660a9;*!*/
+/*}*/
 
-.meat{
-    overflow: auto;
-    grid-area: meat;
-    /*background-color: #6e5334;*/
-}
+/*.meat{*/
+/*    overflow: auto;*/
+/*    grid-area: meat;*/
+/*    !*background-color: #6e5334;*!*/
+/*}*/
 /*@media all and (max-width: 575px) {*/
 /*.row {*/
 /*grid-template-areas:*/
@@ -120,10 +142,17 @@
 /*}*/
 .table1{
     position: center;
-    text-align: center;
+    line-height: 0.9rem;
+    text-align: left;
 }
 .table2{
     table-layout: auto;}
+.table{
+  margin-bottom: 0; margin-top: 0;
+}
+.borderless td, .borderless th {
+    border: none;
+}
 
 .first_knopka{
     text-align: center;
@@ -225,10 +254,23 @@ font-weight: 450;
     height: 220%;
     background: #ccc;
 }
-.df{ color: rgba(210, 20, 20, 0.8);}
+.df{ color: rgba(210, 20, 20, 0.8); font-size: 141%}
 
 .dff{
-    text-align: center;
+    text-align: left;
+}
+#percent{
+    padding-left: 5%;
+    font-weight: normal;
+}
+
+#row {
+    display: flex; #TODO Доделать чтобы кнопки встали вряд + доделать - цвет кнопки на синий + доделать - отмасштабиро
+    это на все кнопки + доделать сделать выползающие окна. и все
+    flex-flow: row nowrap;
+    align-items: center;
+    align-content: center;
+    justify-content: space-between;
 }
 
 

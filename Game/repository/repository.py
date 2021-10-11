@@ -247,9 +247,9 @@ class InvestingOptions:
         sub_info = self.data.loc[indexes, 'now_mortgage'] - self.data.loc[indexes, 'further_mortgage']
         indexes_to_nakop = sub_info[sub_info >= 0].index
         indexes_to_start = sub_info[sub_info < 0].index
-        if indexes_to_start:
+        if len(indexes_to_start) > 0:
             self.accrue_mortgage(indexes_to_start, mon_fut, return_mortgage_init, flag='start')
-        if indexes_to_nakop:
+        if len(indexes_to_nakop) > 0:
             self.accrue_mortgage(indexes_to_nakop, mon_fut, return_mortgage, flag='nakop')
         # DEBUG VARIANTS: взял в актив а, потом в актив б - что будет
         # еще опции - взял сначала в актив а, потом два в активы б и с, потом потом активы а б с
@@ -344,7 +344,7 @@ class InvestingOptions:
                 try:
                     option_dict[option](players_, fut_money)
                 except Exception as e:
-                    print(e)
+                    # print(e)
                     self.bank(players_, fut_money)
         return self
 
@@ -419,7 +419,9 @@ class Repository:
         data[f"asset_{year}_1"] = [i.Active_a for i in a]  # инициализация актива 1
         data[f"asset_{year}_2"] = [i.Active_b for i in a]  # инициализация актива 2
         data[f"asset_{year}_3"] = [i.Active_c for i in a]
-        data['mortgage_count'] = 0
+        data['mortgage_count'] = [i.Mortgage_count for i in a]
+        data['further_mortgage'] = [i.Further_mortgage for i in a]
+        data['now_mortgage'] = [i.Now_mortgage for i in a]
         data = data.set_index("id")  # смена индекса на id
         self.data = data
         self.inflation = inflation_rate
@@ -483,10 +485,10 @@ class Repository:
         self.more_than_40 = gambling.was_more_than_40
         return self.data
 
-# a = Factory()
+a = Factory()
 # Player(Name='Vasya3').save()
 # Player(Name='Vasya2').save()
-# game_1 = a.get_repository(np.arange(1, 4, 1))
+game_1 = a.get_repository(np.arange(1, 4, 1))
 # print(game_1.data)
 # for i in range(1, 7):
 #    game_1.Choice(i,
@@ -527,3 +529,10 @@ class Repository:
 # game_1.data
 # game_1.Gamble(1)
 # print(game_1.data)
+# for i in [1, 2, 3]:
+#     game_1.Choice(i,
+#                   ["stock_together", "stock_index", 'stock_index', 'mortgage', 'mortgage'],
+#                   ["education", "stock_together", "stock_index", 'sosed', 'stock_together'],
+#                   ['stock_together', 'education', 'education', 'mortgage', 'stock_together']
+#                   )
+#     game_1.Gamble(i)

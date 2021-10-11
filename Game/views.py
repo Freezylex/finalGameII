@@ -1,5 +1,6 @@
 import json
 
+import numpy as np
 from django.http import Http404, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
@@ -309,11 +310,11 @@ def next_day_admin(request, year):
             act_a = 'asset_' + str(day1) + '_1'
             act_b = 'asset_' + str(day1) + '_2'
             act_c = 'asset_' + str(day1) + '_3'
-            for a, b, c, d in game1.data[[act_a, act_b, act_c, 'educ']].to_numpy():
+            for a, b, c, d, e, f, g in game1.data[[act_a, act_b, act_c, 'educ', 'mortgage_count', 'further_mortgage', 'now_mortgage']].to_numpy():
                 user = k[i]
                 if flag:
                     user = user.UserID  # тут просто был  просчет с юзером и идшником
-                user.NextYear(a.round(), b.round(), c.round())
+                user.NextYear(np.round(a, 4), np.round(b, 4), np.round(c, 4), e, f, g, d)
                 user.Education = d
                 user.save()
                 f = user.factor_set.filter(Day=day1)[0]
@@ -336,6 +337,10 @@ def to_admin_page(request):
     try:
         try:
             day = list(Admin.objects.all())[-1:][0].Day
+            if request.POST['user']:
+                a = Player.objects.filter(Name=request.POST['user'])[0]
+                a.Name = "Игрок1" + str((np.random.randint(50, 10000) % 5000) + np.random.randint(2, 20) ** 2 % 79)
+                a.save()
         except:
             day = 1
             Admin(Day=1).save()
@@ -346,3 +351,4 @@ def to_admin_page(request):
         raise Http404('Что-то пошло не так в to_admin_page')
     return render(request, "player/AdminPage.html", {'user_factors': user_factors, 'actives': actives,
                                                      'players': players, 'day': day})
+

@@ -86,6 +86,7 @@
         <th scope="col">#</th>
         <th scope="col">Имя</th>
         <th scope="col">Капитал</th>
+        <th scope="col">Поменять имя</th>
     </tr>
     </thead>
 <tbody>
@@ -103,6 +104,15 @@
             </form>
         </td>
         <td>{{ i.SumActive }} ({{ i.SumActive_percentage_increase }})</td>
+        <td>
+                <form action="{% url 'user_page:to_admin_page'%}" method="post">
+
+                {% csrf_token %}
+
+                <button value="{{ i.Name }}" name="user" style="background-color: transparent; border: none;">...</button>
+
+            </form>
+        </td>
     </tr>
     {% endfor %}
 {% endif %}
