@@ -13,8 +13,7 @@
     <title>Economic Game</title>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 </head>
-<body  class="body_ch">
-<div class="div_body">
+<body  id="bdy">
 <div class="div_body__item meat custom-control">
 
 <h4 class="lead heading">Топ игроков</h4>
@@ -37,19 +36,20 @@
 {% endif %}
 </table>
 </div>
+<div class="knopki_div">
 <div class="div_body__item knopki_invest custom-control">
     <form action="{%  url 'user_page:to_MainWindow' player.Name%}" method="post">
             {% csrf_token %}
             <button class="btn width_bottom "><img class="greyed" src="../../static/hard/invest.svg" alt="" width="40" height="40"/><a class="verysmall mard">Инвестировать</a></button>
     </form>
 </div>
-<div class="div_body__item knopki_top custom-control">
+<div class="div_body__item knopki_invest custom-control">
     <form action="{%  url 'user_page:to_top' player.Name %}" method="post">
         {% csrf_token %}
         <button class="btn width_bottom"><img src="../../static/hard/top.svg" alt="" width="40" height="40"/><a class="verysmall mard2">Топ</a></button>
     </form>
 </div>
-<div class="div_body__item history custom-control">
+<div class="div_body__item knopki_invest custom-control">
     <form action="{%  url 'user_page:to_top_players' player.Name%}" method="post">
         {% csrf_token %}
         <button class="btn width_bottom"><img class="greyed" src="../../static/hard/history.svg" alt="" width="40" height="40"/><a class="verysmall mard1">История</a></button>

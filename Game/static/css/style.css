@@ -45,13 +45,12 @@
     /*color: cornflowerblue;*/
 }
 #admin_rename{
-        width: 300px;
-        height: 50px;
+        width: 100%;
         text-align: center;
         padding: 15px;
-        border: 3px solid #0000cc;
+        border: 3px solid #034b99;
         border-radius: 10px;
-        color: #0000cc;
+        color: #034b99;
 }
 
 #pop_ok{
@@ -79,10 +78,14 @@
 @media all and (orientation: landscape), all and (min-width: 480px) {
 
 }
+#bdy{
+    line-height: 1.0;
+}
 
+.knopki_div{display: flex}
+.knopki_invest{
+    width: 33%}
 
-/*.knopki_invest{*/
-/*    grid-area: knopki_invest;}*/
 
 .invest_logo{
     background: url("../hard/invest.svg") no-repeat top left;
@@ -223,9 +226,6 @@
  .labelcustom {color: #FFF;}
 
 .custom-control {
-  display: inline-block !important;
-  padding-left: 0.9rem;
-  padding-right: 0.9rem;
 }
 
 
@@ -263,10 +263,30 @@ font-weight: 450;
     padding-left: 5%;
     font-weight: normal;
 }
+.btn-primary{
+
+background-color: #034b99;
+
+color: white;
+
+}
+
+.btn-primaru:hover,
+
+.btn-primary:focus,
+
+.btn-primary:visited{
+
+background-color: #007499;
+
+color: white;
+
+}
+ /*#TODO Доделать чтобы кнопки встали вряд + доделать - цвет кнопки на синий + доделать - отмасштабиро*/
+ /*   это на все кнопки + доделать сделать выползающие окна. и все?*/
 
 #row {
-    display: flex; #TODO Доделать чтобы кнопки встали вряд + доделать - цвет кнопки на синий + доделать - отмасштабиро
-    это на все кнопки + доделать сделать выползающие окна. и все
+    display: flex;
     flex-flow: row nowrap;
     align-items: center;
     align-content: center;

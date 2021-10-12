@@ -19,6 +19,9 @@ class Player(models.Model):
     Mortgage_count = models.IntegerField('mortgage_count', default=0)
     Further_mortgage = models.IntegerField('further_mortgage', default=0)
     Now_mortgage = models.IntegerField('now_mortgage', default=0)
+    Active_a_historical = models.FloatField('active_a_historical', default=100, null=False)
+    Active_b_historical = models.FloatField('active_b_historical', default=100, null=False)
+    Active_c_historical = models.FloatField('active_c_historical', default=100, null=False)
 
     class Meta:
         verbose_name = 'Игрок'
@@ -43,7 +46,7 @@ class Player(models.Model):
     def actives_pred(self):
         return round((self.Active_c_pred + self.Active_a_pred + self.Active_b_pred) / 3, 4)
 
-    def NextYear(self, a, b, c, e, f, g, d):
+    def NextYear(self, a, b, c, aa, bb, cc, e, f, g, d):
         self.Day += 1
         self.Mortgage_count = e
         self.Further_mortgage = f
@@ -56,9 +59,12 @@ class Player(models.Model):
         self.Active_c = c
         self.Education = d
         self.append_to_history(self.SumActive())
+        self.Act_a_historical = aa
+        self.Act_b_historical = bb
+        self.Act_c_historical = cc
 
     def percentage_increase_active_a(self):
-        res = (-self.actives_pred() + self.Active_a) / self.Active_a_pred
+        res = (-self.actives_pred() + self.Active_a_historical) / self.Active_a_pred
         if res >= 0:
             output = f"+{round(100 * res, 2)}%"
         else:
@@ -66,7 +72,7 @@ class Player(models.Model):
         return output
 
     def percentage_increase_active_b(self):
-        res = (-self.actives_pred() + self.Active_b) / self.Active_b_pred
+        res = (-self.actives_pred() + self.Active_b + self.Active_b_historical) / self.Active_b_pred
         if res >= 0:
             output = f"+{round(100 * res, 2)}%"
         else:
@@ -74,7 +80,7 @@ class Player(models.Model):
         return output
 
     def percentage_increase_active_c(self):
-        res = (-self.actives_pred() + self.Active_c) / self.Active_c_pred
+        res = (-self.actives_pred() + self.Active_c + self.Active_c_historical) / self.Active_c_pred
         if res >= 0:
             output = f"+{round(100 * res, 2)}%"
         else:

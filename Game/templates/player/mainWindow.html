@@ -12,13 +12,13 @@
     <link rel="stylesheet" href="../../static/css/style.css">
     <title>Economic Game</title>
 </head>
-<body>
+<body id="bdy">
 {% if player %}
     <h3 class="lead heading">{{player.Name}}</h3>
 {% else %}
     <h3 class="lead heading">не найдено</h3>
 {% endif %}
-<hr id="polo" color="blue">
+<hr id="polo" color="#034b99">
 <table class="table table-borderless table1 ">
     <tr class="dff">
         <th><br> Ваш капитал </th>
@@ -41,9 +41,51 @@
     </tr>
 
 </table>
+{#<div id="admin_rename">#}
+{#    <table>#}
+{#                    <tr>#}
+{#                        <td class="first_knopka">#}
+{#                            <label class="labelcustom">#}
+{#                                hjk#}
+{#                                <input class="form-check-input big-checkbox" type="radio" name="choice1" value="1" />#}
+{#                            </label>#}
+{#                        </td>#}
+{#                        <td>Вариант 1</td>#}
+{#                    </tr>#}
+{#                    <tr>#}
+{#                        <td class="first_knopka">#}
+{#                            <label class="labelcustom">#}
+{#                                hjk#}
+{#                                <input class="form-check-input big-checkbox" type="radio" name="choice" value="2" />#}
+{#                            </label>#}
+{#                        </td>#}
+{#                        <td>Вариант 2</td>#}
+{#                    </tr>#}
+{#                                        <tr>#}
+{#                        <td class="first_knopka">#}
+{#                            <label class="labelcustom">#}
+{#                                hjk#}
+{#                                <input class="form-check-input big-checkbox" type="radio" name="choice" value="3" />#}
+{#                            </label>#}
+{#                        </td>#}
+{#                        <td>Вариант 3</td>#}
+{#                    </tr>#}
+{#                    <tr>#}
+{#                        <td class="first_knopka">#}
+{#                            <label class="labelcustom">#}
+{#                                hjk#}
+{#                                <input class="form-check-input big-checkbox" type="radio" name="choice" value="4" />#}
+{#                            </label>#}
+{#                        </td>#}
+{#                        <td>Вариант 4</td>#}
+{#                    </tr>#}
+{#                </table>#}
+{#                <form action="{%  url 'user_page:next_step' player.Name %}" method="post">#}
+{#                     {% csrf_token %}#}
+{#                <button class="btn button1 btn-primary ">Обновить страничку</button>#}
+{#</div>#}
 
 <h4 class="heading1 lead heading">Инвестируйте!</h4>
-
 <form class="d" action="{%  url 'user_page:make_choice' player.Name%}" method="post">
     {% csrf_token %}
     <table class="table table2">
@@ -84,33 +126,30 @@
 </form>
 <form action="{%  url 'user_page:next_step' player.Name %}" method="post">
                 {% csrf_token %}
-                <button class="btn button1 btn-outline-primary ">Обновить страничку</button>
+                <button class="btn button1 btn-primary ">Обновить страничку</button>
 </form>
 </div>
-<div id="knopki_div">
-<div class="div_body__item knopki_invest custom-control">
+<div class="knopki_div">
+<div class=" knopki_invest custom-control">
     <form action="{%  url 'user_page:to_MainWindow' player.Name%}" method="post">
             {% csrf_token %}
             <button class="btn width_bottom "><img src="../../static/hard/invest.svg" alt="" width="40" height="40"/><a class="verysmall mard">Инвестировать</a></button>
     </form>
 </div>
-<div class="div_body__item knopki_top custom-control">
+<div class="div_body__item knopki_invest custom-control">
     <form action="{%  url 'user_page:to_top' player.Name %}" method="post">
         {% csrf_token %}
         <button class="btn  width_bottom"><img class="greyed" src="../../static/hard/top_wite.svg" alt="" width="40" height="40"/><a class="verysmall mard2">Топ</a></button>
     </form>
 </div>
-<div class="div_body__item history custom-control">
+<div class="div_body__item knopki_invest custom-control">
     <form action="{%  url 'user_page:to_top_players' player.Name%}" method="post">
         {% csrf_token %}
         <button class="btn  width_bottom"><img class="greyed" src="../../static/hard/history.svg" alt="" width="40" height="40"/><a class="verysmall mard1">История</a></button>
     </form>
 </div>
 </div>
-<div id="admin_rename">
-    dfjkl
-</div>
-</div>
+
 {#<div class="popup" id="popup">#}
 {#    <div class="popup__body">#}
 {#        <div class="popup__content">#}
@@ -172,7 +211,7 @@
             console.log(flag[0])
             if (flag[0] === "+")
             {
-                ct.color = "blue";
+                ct.color = "#034b99";
             }
             else{
                 ct.color = "rgba(190,17,17,0.8)";

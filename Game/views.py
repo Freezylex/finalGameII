@@ -310,11 +310,16 @@ def next_day_admin(request, year):
             act_a = 'asset_' + str(day1) + '_1'
             act_b = 'asset_' + str(day1) + '_2'
             act_c = 'asset_' + str(day1) + '_3'
-            for a, b, c, d, e, f, g in game1.data[[act_a, act_b, act_c, 'educ', 'mortgage_count', 'further_mortgage', 'now_mortgage']].to_numpy():
+            act_a_historical = 'dohod' +  str(day1) + '_1'
+            act_b_historical = 'dohod' +  str(day1) + '_2'
+            act_c_historical = 'dohod' +  str(day1) + '_3'
+            for a, b, c,aa, bb, cc, d, e, f, g in game1.data[[act_a, act_b, act_c,act_a_historical,act_b_historical,
+                                                   act_c_historical, 'educ', 'mortgage_count', 'further_mortgage',
+                                                   'now_mortgage']].to_numpy():
                 user = k[i]
                 if flag:
                     user = user.UserID  # тут просто был  просчет с юзером и идшником
-                user.NextYear(np.round(a, 4), np.round(b, 4), np.round(c, 4), e, f, g, d)
+                user.NextYear(np.round(a, 4), np.round(b, 4), np.round(c, 4), aa,bb,cc, e, f, g, d)
                 user.Education = d
                 user.save()
                 f = user.factor_set.filter(Day=day1)[0]

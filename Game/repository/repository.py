@@ -388,6 +388,11 @@ class InvestingOptions:
         self.list_of_choices = self.list_of_choices[1:]
         self._accrue_money_(self.choice_3, self.future_money_3)
         total_ = self.data[[self.future_money_1, self.future_money_2, self.future_money_3]].sum(axis=1)
+        self.data["dohod" + str(self.year) + '_1'] = self.data[self.future_money_1] # они всегда 100
+        self.data["dohod" + str(self.year) + '_2'] = self.data[self.future_money_2]
+        self.data["dohod" + str(self.year) + '_3'] = self.data[self.future_money_3]
+
+
         self.data["TOTAL"] = total_
         if self.checker:
             self.was_more_than_40 = True
