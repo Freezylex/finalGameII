@@ -59,9 +59,9 @@ class Player(models.Model):
         self.Active_c = c
         self.Education = d
         self.append_to_history(self.SumActive())
-        self.Act_a_historical = aa
-        self.Act_b_historical = bb
-        self.Act_c_historical = cc
+        self.Active_a_historical = aa
+        self.Active_b_historical = bb
+        self.Active_c_historical = cc
 
     def percentage_increase_active_a(self):
         res = (-self.actives_pred() + self.Active_a_historical) / self.Active_a_pred
@@ -72,7 +72,7 @@ class Player(models.Model):
         return output
 
     def percentage_increase_active_b(self):
-        res = (-self.actives_pred() + self.Active_b + self.Active_b_historical) / self.Active_b_pred
+        res = (-self.actives_pred() + self.Active_b_historical) / self.Active_b_pred
         if res >= 0:
             output = f"+{round(100 * res, 2)}%"
         else:
@@ -80,7 +80,7 @@ class Player(models.Model):
         return output
 
     def percentage_increase_active_c(self):
-        res = (-self.actives_pred() + self.Active_c + self.Active_c_historical) / self.Active_c_pred
+        res = (-self.actives_pred() + self.Active_c_historical) / self.Active_c_pred
         if res >= 0:
             output = f"+{round(100 * res, 2)}%"
         else:

@@ -310,9 +310,9 @@ def next_day_admin(request, year):
             act_a = 'asset_' + str(day1) + '_1'
             act_b = 'asset_' + str(day1) + '_2'
             act_c = 'asset_' + str(day1) + '_3'
-            act_a_historical = 'dohod' +  str(day1) + '_1'
-            act_b_historical = 'dohod' +  str(day1) + '_2'
-            act_c_historical = 'dohod' +  str(day1) + '_3'
+            act_a_historical = 'asset_' + str(day1) + '_1_' + 'for_dohod'
+            act_b_historical = 'asset_' + str(day1) + '_2_' + 'for_dohod'
+            act_c_historical = 'asset_' + str(day1) + '_3_' + 'for_dohod'
             for a, b, c,aa, bb, cc, d, e, f, g in game1.data[[act_a, act_b, act_c,act_a_historical,act_b_historical,
                                                    act_c_historical, 'educ', 'mortgage_count', 'further_mortgage',
                                                    'now_mortgage']].to_numpy():

@@ -131,7 +131,7 @@ class InvestingOptions:
     def education(self, indexes, mon_fut):
         # поставь ограничение на 8-ой уровень образования
         self.data.loc[indexes, 'educ'] += 1
-        self.data.loc[self.data['educ'] > 1, 'educ'] = 1  # ограничение на образование
+        #self.data.loc[self.data['educ'] > 1, 'educ'] = 1  # ограничение на образование
         self.data.loc[indexes, mon_fut] = (1 / 3) * self.data.loc[indexes, "TOTAL"]
         return self
 
@@ -190,7 +190,7 @@ class InvestingOptions:
         return self
 
     def sosed(self, indexes, mon_fut):
-        outcomes = np.random.choice(a=[0.06, -0.04], size=len(indexes), p=[1 / 2, 1 / 2])
+        outcomes = np.random.choice(a=[0.1, 0.0], size=len(indexes), p=[1 / 2, 1 / 2])
         outcomes += 1
         self.data.loc[indexes, mon_fut] = (1 / 3) * (self.data.loc[indexes, "TOTAL"] * outcomes +
                                                      self.data.loc[indexes, "TOTAL"] * self.educ * self.data.loc[
@@ -207,6 +207,8 @@ class InvestingOptions:
             self.first_check_mortgage = False
         return_mortgage = 1.07  # FIX
         return_mortgage_init = 1.03
+        return_mortgage += self.make_random_noise(0, 0.01)
+        return_mortgage_init += self.make_random_noise(0, 0.01)
         """
         condition_first = self.data['mortgage_count'] != 0
         if self.data[condition_first].shape[0] == 0: #проверка, чтобы не было ошибки в коде - начисляем хоть кому-то
@@ -267,6 +269,7 @@ class InvestingOptions:
             vals_2 += 1
         elif flag == 'nakop':
             vals_2 -= 1
+            self.data.loc[to_accrue.index, 'further_mortgage'] -= 1
         self.data.loc[vals_2.index, 'mortgage_count'] = vals_2.values
         return self
 
@@ -388,11 +391,10 @@ class InvestingOptions:
         self.list_of_choices = self.list_of_choices[1:]
         self._accrue_money_(self.choice_3, self.future_money_3)
         total_ = self.data[[self.future_money_1, self.future_money_2, self.future_money_3]].sum(axis=1)
-        self.data["dohod" + str(self.year) + '_1'] = self.data[self.future_money_1] # они всегда 100
-        self.data["dohod" + str(self.year) + '_2'] = self.data[self.future_money_2]
-        self.data["dohod" + str(self.year) + '_3'] = self.data[self.future_money_3]
-
-
+        self.data[f'TOTAL_year_{self.year}_for_dohod'] = self.data['TOTAL']
+        self.data[f"asset_{self.year}_1_for_dohod"] = self.data[self.future_money_1]
+        self.data[f"asset_{self.year}_2_for_dohod"] = self.data[self.future_money_2]
+        self.data[f"asset_{self.year}_3_for_dohod"] = self.data[self.future_money_3]
         self.data["TOTAL"] = total_
         if self.checker:
             self.was_more_than_40 = True
@@ -480,8 +482,8 @@ class Repository:
 
         gambling = InvestingOptions(self.data, year, educ_dohod=self.educ_dohod,
                                     inflation_rate=self.inflation,
-                                    number_only=N_only / len(self.data),  # корректировка
-                                    number_together=N_together,
+                                    number_only=0,#N_only / len(self.data),  # корректировка
+                                    number_together=0,#N_together,
                                     was_more_than_40=self.more_than_40)
         new_data = gambling.accrue()
         new_data['now_mortgage'] = new_data['further_mortgage']
@@ -490,15 +492,16 @@ class Repository:
         self.more_than_40 = gambling.was_more_than_40
         return self.data
 
-a = Factory()
+# a = Factory()
 # Player(Name='Vasya3').save()
 # Player(Name='Vasya2').save()
-game_1 = a.get_repository(np.arange(1, 4, 1))
+# game_1 = a.get_repository(np.arange(1, 4, 1))
 # print(game_1.data)
 # for i in range(1, 7):
 #    game_1.Choice(i,
-#                  ["stock_index", "stock_index", 'stock_index'],
-#                  ["stock_index", "stock_index", "stock_index"]
+#                  ["mortgage", "stock_index", 'mortgage', 'education', 'sosed', 'korp_bond', 'gov_bond', 'mortgage'],
+#                  ["mortgage", "mortgage", "stock_index",'education', 'sosed', 'korp_bond', 'gov_bond', 'mortgage'],
+#                  ["mortgage", "stock_index", 'mortgage','education', 'sosed', 'korp_bond', 'gov_bond', 'mortgage'],
 #                  )
 #    game_1.Gamble(i)
 # game_1.Choice(7,
