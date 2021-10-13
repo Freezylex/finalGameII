@@ -13,7 +13,8 @@
     <title>Economic Game</title>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 </head>
-<body  id="bdy">
+<body  class="body_ch">
+<div class="div_body">
 <div class="div_body__item meat custom-control">
 
 <h4 class="lead heading">Топ игроков</h4>
@@ -36,20 +37,19 @@
 {% endif %}
 </table>
 </div>
-<div class="knopki_div">
 <div class="div_body__item knopki_invest custom-control">
     <form action="{%  url 'user_page:to_MainWindow' player.Name%}" method="post">
             {% csrf_token %}
             <button class="btn width_bottom "><img class="greyed" src="../../static/hard/invest.svg" alt="" width="40" height="40"/><a class="verysmall mard">Инвестировать</a></button>
     </form>
 </div>
-<div class="div_body__item knopki_invest custom-control">
+<div class="div_body__item knopki_top custom-control">
     <form action="{%  url 'user_page:to_top' player.Name %}" method="post">
         {% csrf_token %}
-        <button class="btn width_bottom"><img src="../../static/hard/top.svg" alt="" width="40" height="40"/><a class="verysmall mard2">Топ</a></button>
+        <button class="btn width_bottom"><img class="blacked" src="../../static/hard/top.svg" alt="" width="40" height="40"/><a class="verysmall mard2">Топ</a></button>
     </form>
 </div>
-<div class="div_body__item knopki_invest custom-control">
+<div class="div_body__item history custom-control">
     <form action="{%  url 'user_page:to_top_players' player.Name%}" method="post">
         {% csrf_token %}
         <button class="btn width_bottom"><img class="greyed" src="../../static/hard/history.svg" alt="" width="40" height="40"/><a class="verysmall mard1">История</a></button>
@@ -80,6 +80,26 @@ $(this).find('th:first').text(number+".");
   }, 'xml');
 });
 </script>
+
+<script>
+    $('img.blacked').each(function(){
+  var $img = $(this);
+  var imgClass = $img.attr('class');
+  var imgURL = $img.attr('src');
+  $.get(imgURL, function(data) {
+    var $svg = $(data).find('svg');
+    if(typeof imgClass !== 'undefined') {
+      $svg = $svg.attr('class', imgClass+' replaced-svg');
+    }
+    $svg = $svg.removeAttr('xmlns:a');
+    if(!$svg.attr('viewBox') && $svg.attr('height') && $svg.attr('width')) {
+      $svg.attr('viewBox', '0 0 ' + $svg.attr('height') + ' ' + $svg.attr('width'))
+    }
+    $img.replaceWith($svg);
+  }, 'xml');
+});
+</script>
+
 <!-- Optional JavaScript -->
 <!-- jQuery first, then Popper.js, then Bootstrap JS -->
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>

@@ -19,7 +19,18 @@
     <tr>
         <td>Текущий год:</td>
         <td>{{ day }}</td>
+        <td> Количество проголосовавших: {{ counter }} игроков из {{ q }}
+            <form action="{% url 'user_page:to_admin_page' %}" method="post">
+
+                {% csrf_token %}
+
+                <button class="btn btn-dark shap">Обновить страничку</button>
+
+            </form>
+        </td>
     </tr>
+</table>
+<table>
     <tr>
         <td colspan="2">
             <form action="{% url 'user_page:next_day_admin' day %}" method="post">
@@ -87,6 +98,7 @@
         <th scope="col">Имя</th>
         <th scope="col">Капитал</th>
         <th scope="col">Поменять имя</th>
+        <th scope="col">Сделал ход или не сделал</th>
     </tr>
     </thead>
 <tbody>
@@ -112,6 +124,9 @@
                 <button value="{{ i.Name }}" name="user" style="background-color: transparent; border: none;">...</button>
 
             </form>
+        </td>
+        <td>
+            {{ i.Day }}
         </td>
     </tr>
     {% endfor %}

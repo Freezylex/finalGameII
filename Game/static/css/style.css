@@ -4,24 +4,37 @@
     transform: translate(-50%, 0);
 
 }
-#polo{
+#polo1{
     margin: 2px;
-    margin-top: 2%;
+    margin-bottom: -0.7rem;
+    height: 0.05rem;
+    border-color: #003fa8
 }
-/*.n{*/
-/*    display: flex;*/
-/*    flex: 1 1 0;*/
-/*    flex-direction: column;*/
-/*    -webkit-box-pack: center;*/
-/*    justify-content: center;*/
-/*    -webkit-box-align: center;*/
-/*    align-items: center;*/
-/*}*/
-/*.ror{*/
-/*    max-width: 320px;*/
-/*    !*background: aqua;*!*/
-/*    width: 100% !important;*/
-/*}*/
+#polo2{
+    margin: 2px;
+    margin-bottom: -0.1rem;
+    height: 0.05rem;
+    border-color: #003fa8
+}
+#polo3{
+    height: 0.165rem;
+    margin-top: 0.15rem;
+    margin-bottom: 0.7rem;
+}
+.n{
+    display: flex;
+    flex: 1 1 0;
+    flex-direction: column;
+    -webkit-box-pack: center;
+    justify-content: center;
+    -webkit-box-align: center;
+    align-items: center;
+}
+.ror{
+    max-width: 320px;
+    /*background: aqua;*/
+    width: 100% !important;
+}
 
 #divauty {
     display: flex;
@@ -61,20 +74,20 @@
 .body_ch{
     overflow: hidden;
 }
-/*.div_body{*/
-/*    !*position: fixed;*!*/
-/*    display: grid;*/
-/*    grid-template-rows: 90% 10%;*/
-/*    grid-template-columns: repeat(3, 1fr);*/
-/*    grid-auto-columns: 1fr;*/
-/*    width: 100vw;*/
-/*    max-width: 600px;*/
-/*    height: 87vh;*/
-/*    justify-content: space-between;*/
-/*    grid-template-areas:*/
-/*            "meat meat meat"*/
-/*            "knopki_invest knopki_top history"*/
-/*}*/
+.div_body{
+    /*position: fixed;*/
+    display: grid;
+    grid-template-rows: 90% 10%;
+    grid-template-columns: repeat(3, 1fr);
+    grid-auto-columns: 1fr;
+    width: 100vw;
+    max-width: 600px;
+    height: 87vh;
+    justify-content: space-between;
+    grid-template-areas:
+            "meat meat meat"
+            "knopki_invest knopki_top history"
+}
 @media all and (orientation: landscape), all and (min-width: 480px) {
 
 }
@@ -83,8 +96,9 @@
 }
 
 .knopki_div{display: flex}
+
 .knopki_invest{
-    width: 33%}
+    grid-area: knopki_invest;}
 
 
 .invest_logo{
@@ -114,24 +128,31 @@
 
 }
 .greyed {
-  fill: #ababab;
+  fill: rgb(127, 180, 239);
   width: 40px;
   height: 40px;
 }
+.blacked {
+  fill: rgb(0, 63, 168);
+  width: 40px;
+  height: 40px;
+}
+
 .history{
     grid-area: history;
     /*background-color: aqua;*/
 }
-/*.knopki_top{*/
-/*   grid-area: knopki_top;*/
-/*    !*background-color: #8660a9;*!*/
-/*}*/
+.knopki_top{
+   grid-area: knopki_top;
+    /*background-color: #8660a9;*/
+}
 
-/*.meat{*/
-/*    overflow: auto;*/
-/*    grid-area: meat;*/
-/*    !*background-color: #6e5334;*!*/
-/*}*/
+.meat{
+    overflow: auto;
+    grid-area: meat;
+    /*background-color: #6e5334;*/
+}
+
 /*@media all and (max-width: 575px) {*/
 /*.row {*/
 /*grid-template-areas:*/
@@ -226,15 +247,38 @@
  .labelcustom {color: #FFF;}
 
 .custom-control {
+  display: inline-block !important;
+  padding-left: 0.9rem;
+  padding-right: 0.9rem;
 }
 
-
+.shap{
+    width: 6rem;
+    height: 3rem;
+}
+@font-face { /*HelveticaC Bold*/
+font-family: 'HelveticaCBold';
+src: url('../fonts/helveticac-bold.eot');
+src: url('../fonts/helveticac-bold.eot') format('embedded-opentype'),
+     url('../fonts/helveticac-bold.woff') format('woff'),
+     url('../fonts/helveticac-bold.ttf') format('truetype'),
+     url('../fonts/helveticac-bold.svg#HelveticaCBold') format('svg');
+font-weight: normal;
+font-style: normal;
+}
+@font-face {
+  font-family: 'Calibri light';
+}
 
 .heading{
     text-align: center;
+    font-weight: 650;
+    color: rgb(1,31,127);
+    font-family: 'Calibri light';
 }
 
 .heading1{
+    height: 1.4rem;
 font-weight: 450;
 }
 
@@ -260,28 +304,25 @@ font-weight: 450;
     text-align: left;
 }
 #percent{
-    padding-left: 5%;
+    padding-left: 2%;
     font-weight: normal;
 }
 .btn-primary{
-
-background-color: #034b99;
-
+background-color: rgb(0, 63, 168);
 color: white;
-
+}
+.btn-primay:hover,.btn-primary:focus,.btn-primary:visited{
+background-color: rgb(0, 63, 168);
+color: white;
+}
+.btn-outline-primary{
+        color: rgb(0, 63, 168);
 }
 
-.btn-primaru:hover,
 
-.btn-primary:focus,
-
-.btn-primary:visited{
-
-background-color: #007499;
-
-color: white;
-
-}
+.btn-outline-primary:hover, .btn-outline-primary:focus, .btn-outline-primary:visited{
+background-color: rgb(0, 63, 168);
+color: white;}
  /*#TODO Доделать чтобы кнопки встали вряд + доделать - цвет кнопки на синий + доделать - отмасштабиро*/
  /*   это на все кнопки + доделать сделать выползающие окна. и все?*/
 

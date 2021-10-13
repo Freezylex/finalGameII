@@ -29,7 +29,7 @@ def to_MainWindow(request, player):
         # player.save()
         players = Factory.get_players()
         rating = list(players).index(player) + 1
-        day = player.Day
+        day = list(Admin.objects.all())[-1:][0].Day #TODO поменять на день пользоватлея
         len_rating = len(players)
         id_actives = [0, 1, 2, 8]
         if day >= 4:
@@ -43,13 +43,13 @@ def to_MainWindow(request, player):
         raise Http404('Что-то пошло не так в to Main menue')
     return render(request, "player/mainWindow.html", {'player': player, 'len_rating': len_rating,
                                                       'players': players,
-                                                      'actives': actives, 'rating': rating})
+                                                      'actives': actives, 'rating': rating, 'day':day})
 
 
 def to_top_players(request, player_nam):
     try:
         player = Player.objects.get(Name=player_nam)
-        # day = list(Admin.objects.all())[-1:][0].Day
+        day = list(Admin.objects.all())[-1:][0].Day
         # if day == 1:
         #     stata = ['Здесь появится статистика по предыдущим годам'] # Перевести стату в репозиторий
         # else:
@@ -72,7 +72,7 @@ def to_top_players(request, player_nam):
         #     else:
         #         user_choices.append('err in data. repository is not initialised')
 
-        years = json.dumps(list(range(1, player.Day + 1)))
+        years = json.dumps(list(range(1, day + 1)))
 
     except:
         raise Http404('Что-то пошло не так')
@@ -94,8 +94,8 @@ def to_personal_page(request):
                 players = Factory.get_players()
             except:
                 raise Http404('Что-то пошло не так в to_admin_page')
-            return render(request, "player/AdminPage.html", {'user_factors': user_factors, 'actives': actives,
-                                                                 'players': players, 'day': day})
+            return render(request, "player/AdminPage.html", {'counter': len(user_factors), 'q': len(players), 'actives': actives,
+                                                     'players': players, 'day': day})
 
         a = Player.objects.filter(Name=request.POST['user'])
         if len(a) == 0:
@@ -148,7 +148,7 @@ def next_step(request, play):
         raise Http404('Что-то пошло не так в make_chio')
     return render(request, "player/mainWindow.html", {'player': player, 'len_rating': len_rating,
                                                       'players': players,
-                                                      'actives': actives, 'rating': rating})
+                                                      'actives': actives, 'rating': rating, 'day':day})
 
 
 
@@ -157,6 +157,8 @@ def make_choice(request, player_name):  # игроком нажата клави
     try:
         st_only=False
         player = Player.objects.get(Name=player_name)
+        player.Day = player.Day + 1 #TODO Позже перестать использовать день как флаг что игрок сделал ход
+        player.save()
         day = list(Admin.objects.all())[-1:][0].Day
         # player.save()
         players = Factory.get_players()
@@ -196,7 +198,7 @@ def make_choice(request, player_name):  # игроком нажата клави
         raise Http404('Что-то пошло не так в make_chio')
     return render(request, "player/mainWindow.html", {'player': player, 'len_rating': len_rating,
                                                       'players': players,
-                                                      'actives': actives, 'rating': rating})
+                                                      'actives': actives, 'rating': rating, 'day':day})
 
 
 # factory = Factory()
@@ -223,13 +225,15 @@ def next_day_admin(request, year):
 
             day = 1  # загружаем 1й день
 
-            return render(request, "player/AdminPage.html", {'user_factors': user_factors, 'actives': actives,
-                                                             'players': players, 'day': day})
+            return render(request, "player/AdminPage.html", {'counter': len(user_factors), 'q': len(players), 'actives': actives,
+                                                     'players': players, 'day': day})
         if int(year) == 500:  # если нажата кнопка удалить всех пользователей
             players.delete()  # удаляем пользователей
             Admin(Day=day1).save()  # день сохраняем текущий
-            return render(request, "player/AdminPage.html", {'user_factors': user_factors, 'actives': actives,
-                                                             'players': players, 'day': day1})
+            counter = len(user_factors)
+            q = len(players)
+            return render(request, "player/AdminPage.html", {'counter': counter, 'q': q, 'actives': actives,
+                                                     'players': players, 'day': day})
 
         if int(year) == 600:  # если нажата кнопка - загрузить тестовый массив юзеров - можно убрать в репозиторий
             Player(Name='Добротворский').save()
@@ -240,9 +244,10 @@ def next_day_admin(request, year):
             d = Admin(Day=day)  # сохраняем текущий день и показываем всех пользователей
             d.save()
             players = Factory.get_players()
-            return render(request, "player/AdminPage.html", {'user_factors': user_factors, 'actives': actives,
-                                                             'players': players, 'day': day})
-
+            counter = len(user_factors)
+            q = len(players)
+            return render(request, "player/AdminPage.html", {'counter': counter, 'q': q, 'actives': actives,
+                                                     'players': players, 'day': day})
         if int(year) == 1000 or int(year) == 0:  # если нажата кнопка - предыдущий год. тогда
             if day == 0:  # нельзя уходить в отрицуательные значения - мб добавить что
                 day += 1
@@ -282,7 +287,7 @@ def next_day_admin(request, year):
                         elem = dict_k[i]
                         list_of_actives_a.append(elem.Name1.Name_eng)
                         list_of_actives_b.append(elem.Name2.Name_eng)
-                        list_of_actives_c.append(elem.Name2.Name_eng)
+                        list_of_actives_c.append(elem.Name3.Name_eng)
                     else:
                         list_of_actives_a.append(empty_choice)
                         list_of_actives_b.append(empty_choice)
@@ -329,31 +334,34 @@ def next_day_admin(request, year):
                 f.save()
                 i += 1
         players = Factory.get_players()
-
-
-
+        counter = len(Factor.objects.filter(Day=day))
+        q = len(players)
     except:
-        raise Http404('Что-то пошло не так в to Main menue')
-    return render(request, "player/AdminPage.html", {'user_factors': user_factors, 'actives': actives,
+        raise Http404('Что-то пошло не так в to_admin_page')
+    return render(request, "player/AdminPage.html", {'counter': counter, 'q' : q, 'actives': actives,
                                                      'players': players, 'day': day})
-
 
 def to_admin_page(request):
     try:
         try:
             day = list(Admin.objects.all())[-1:][0].Day
-            if request.POST['user']:
+            try:
                 a = Player.objects.filter(Name=request.POST['user'])[0]
                 a.Name = "Игрок1" + str((np.random.randint(50, 10000) % 5000) + np.random.randint(2, 20) ** 2 % 79)
                 a.save()
+            except:
+                pass
         except:
             day = 1
+            print('err')
             Admin(Day=1).save()
         user_factors = Factor.objects.filter(Day=day)
         players = Factory.get_players()
         actives = Active.objects.all()  # todo допилить админскую страничку
+        counter = len(user_factors)
+        q = len(players)
     except:
         raise Http404('Что-то пошло не так в to_admin_page')
-    return render(request, "player/AdminPage.html", {'user_factors': user_factors, 'actives': actives,
+    return render(request, "player/AdminPage.html", {'counter': counter, 'q' : q, 'actives': actives,
                                                      'players': players, 'day': day})
 

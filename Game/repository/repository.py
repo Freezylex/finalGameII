@@ -83,10 +83,8 @@ class InvestingOptions:
     def bank(self, indexes,
              mon_fut, flag=0):
         '''
-
         Реализация инвествыбора "вложение в банк".
         ВАЖНО!!!! ПОСЛЕДУЮЩИЕ ФУНКЦИИ РАБОТАЮТ ПО ТАКОМУ ЖЕ ПРИНЦИПУ
-
         :param indexes: индексы игроков, которые выбрали банк - np.array
         :param mon_fut: колонка, куда будет начислена сумма по результатам инвестирования - str
         :param mon_prev: колонка, откуда будет взята сумма по результатам прошлых инвестирований - str
@@ -104,7 +102,6 @@ class InvestingOptions:
     def gov_bond_pm(self, mon_prev: float, player: Player, flag = 0):
         scalar_value = np.random.choice(a=[0.035, 0, -0.01], p=[0.25, 0.5, 0.25])
         return mon_prev * (1 + scalar_value + self.inflat) + mon_prev * self.educ * flag * player.Education
-
     def education_pm(self, mon_prev: float, player: Player, flag=0):
         player.Education += 1
         player.save()
@@ -270,6 +267,7 @@ class InvestingOptions:
         elif flag == 'nakop':
             vals_2 -= 1
             self.data.loc[to_accrue.index, 'further_mortgage'] -= 1
+            self.data.loc[to_accrue.index, 'now_mortgage'] -= 1
         self.data.loc[vals_2.index, 'mortgage_count'] = vals_2.values
         return self
 
@@ -285,12 +283,11 @@ class InvestingOptions:
         else:
             count_second_choice = count_second_choice.loc[indexes][[self.choice_1, self.choice_2, self.choice_3]]
             count_second_choice = count_second_choice.isin(['mortgage']).sum(axis=1)
-            difference = self.data.loc[indexes, 'mortgage_count'] - count_second_choice
+            difference = count_second_choice - self.data.loc[indexes, 'mortgage_count']
             '''
             мы будем понижать только тем, у кого разница отрицательная. Это значит, что они не использовали свою возможность
             второй раз вложиться в недвигу, и тогда мы убираем у них первоначальное вложения из накопа, чтобы потом,
             когда они позже в игре решат вложится в недвигу, не был начислен сверхдоход
-
             у тех, у кого разница положительная, ничего не трогаем, потому что они могли, например, в год t-1 выбрать
             1 недвигу, а в год t - две. 
             '''
@@ -304,7 +301,6 @@ class InvestingOptions:
         Изначально функция была написана для того, чтобы флаг не менялся в зависимости от порядка
         вложения в актив (например, если education был выбран в качестве первого актива, то повторный вызов
         accrue привел бы к увеличению доходности
-
         :return: булевское значение для того, чтобы можно было начислять допдоход по образованию
         '''
         if self.year == 1:
@@ -318,7 +314,6 @@ class InvestingOptions:
         !!!!!!!!!ПОКА НЕЯСНО КАК СРАВНИВАТЬ NaN - у меня пандас отказывается сравнивать np.nan, полученный
         на вход в датафрейм с nan
         !!!!!!!
-
         :param year_column: колонка, где находятся выборы участников в этот год - str
         :param fut_money: колонка, куда будет начислена сумма по результатам инвестирования - str
         :return: self
@@ -378,9 +373,7 @@ class InvestingOptions:
 
     def accrue(self):
         '''
-
         Проход по инвестиционным опциям и начисление доходности для всех игроков
-
         :return: pd.DataFrame - итоговый датафрейм после 1 года игры.
         '''
         self.first_education()
@@ -405,9 +398,7 @@ class Repository:
 
     def __init__(self, id_, year=None, inflation_rate=0.04, educ_dohod=0.0033):
         '''
-
         Базовое правило в названии колонок: сначала ГОД, потом номер актива
-
         :param id_: айдишники игроков
         :param inflation_rate: базовая цифра, от которой отталкиваются дальнейшие проценты - уровень инфляции
         '''
@@ -482,13 +473,14 @@ class Repository:
 
         gambling = InvestingOptions(self.data, year, educ_dohod=self.educ_dohod,
                                     inflation_rate=self.inflation,
-                                    number_only=0,#N_only / len(self.data),  # корректировка
-                                    number_together=0,#N_together,
+                                    number_only=N_only / len(self.data),  # корректировка
+                                    number_together=N_together,
                                     was_more_than_40=self.more_than_40)
         new_data = gambling.accrue()
         new_data['now_mortgage'] = new_data['further_mortgage']
         new_data['further_mortgage'] = 0
         self.data = new_data
+        print(new_data[['mortgage_count', 'further_mortgage', 'now_mortgage']])
         self.more_than_40 = gambling.was_more_than_40
         return self.data
 
@@ -498,49 +490,20 @@ class Repository:
 # game_1 = a.get_repository(np.arange(1, 4, 1))
 # print(game_1.data)
 # for i in range(1, 7):
-#    game_1.Choice(i,
+#     if i == 1:
+#         game_1.Choice(i,
 #                  ["mortgage", "stock_index", 'mortgage', 'education', 'sosed', 'korp_bond', 'gov_bond', 'mortgage'],
-#                  ["mortgage", "mortgage", "stock_index",'education', 'sosed', 'korp_bond', 'gov_bond', 'mortgage'],
-#                  ["mortgage", "stock_index", 'mortgage','education', 'sosed', 'korp_bond', 'gov_bond', 'mortgage'],
+#                  ["bank", "mortgage", "stock_index",'education', 'sosed', 'korp_bond', 'gov_bond', 'mortgage'],
+#                  ["bank", "stock_index", 'mortgage','education', 'sosed', 'korp_bond', 'gov_bond', 'mortgage'],
 #                  )
-#    game_1.Gamble(i)
-# game_1.Choice(7,
-#              ["stock_together" ,"stock_index",'stock_index'],
-#              ["stock_index", "stock_index", "stock_index"]
-#              )
-# game_1.Choice(3,
-#               ["" ,"",'',"",''],
-#               ["", "", "","",'']
-#               )
-# game_1.Gamble(3)
-# print(game_1.data)
-# game_1.Choice(8,
-#              ["stock_together" ,"stock_index",'stock_index'],
-#              ["stock_index", "stock_index", "stock_index"]
-#             )
-# game_1.Gamble(8)
-# game_1.Choice(2,
-# ["korp_bond" ,"korp_bond",'korp_bond'],
-# ["korp_bond", "korp_bond", "korp_bond"]
-# )
-# game_1.Gamble(2)
-# print(game_1.data.iloc[1])
-#
-# print(list(game_1.data.iloc[1]))
-# game_1.get_history(0)
-
-# game_1 = GAME(np.arange(1, 4, 1))
-# game_1.Choice(1,
-#               ['sosed', 'education', 'sosed'],
-#               ['bank', 'education', 'sosed']
-#               )
-# game_1.data
-# game_1.Gamble(1)
-# print(game_1.data)
-# for i in [1, 2, 3]:
-#     game_1.Choice(i,
-#                   ["stock_together", "stock_index", 'stock_index', 'mortgage', 'mortgage'],
-#                   ["education", "stock_together", "stock_index", 'sosed', 'stock_together'],
-#                   ['stock_together', 'education', 'education', 'mortgage', 'stock_together']
-#                   )
-#     game_1.Gamble(i)
+#         game_1.Gamble(i)
+#     else:
+#         game_1.Choice(i,
+#                       ["mortgage", "stock_index", 'mortgage', 'education', 'sosed', 'korp_bond', 'gov_bond',
+#                        'mortgage'],
+#                       ["mortgage", "mortgage", "stock_index", 'education', 'sosed', 'korp_bond', 'gov_bond',
+#                        'mortgage'],
+#                       ["mortgage", "stock_index", 'mortgage', 'education', 'sosed', 'korp_bond', 'gov_bond',
+#                        'mortgage'],
+#                       )
+#         game_1.Gamble(i)
