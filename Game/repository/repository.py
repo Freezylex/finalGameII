@@ -1,6 +1,7 @@
 import csv, sys, os
 import os
 from datetime import datetime
+import logging
 
 from django.db.models import F
 
@@ -29,8 +30,8 @@ class Factory:
     def __init__(self):
         self.repo = None
 
-    def get_repository(self, id_):
-        self.repo = self.repo or Repository(id_)
+    def get_repository(self, id_, flag_40=None):
+        self.repo = self.repo or Repository(id_, more_than_40 = flag_40)
         return self.repo
 
     @staticmethod
@@ -75,10 +76,6 @@ class InvestingOptions:
         self.was_more_than_40 = was_more_than_40
         self.checker = False
         self.first_check_mortgage = True
-        if 'further_mortgage' not in self.data.columns:
-            self.data['further_mortgage'] = 0
-        if 'now_mortgage' not in self.data.columns:
-            self.data['now_mortgage'] = 0
 
     def bank(self, indexes,
              mon_fut, flag=0):
@@ -91,9 +88,8 @@ class InvestingOptions:
         :param flag: по дефолту 0 - для дополнительного дохода от образования необходимо поставить 1
         :return: self
         '''
-        self.data.loc[indexes, mon_fut] = (1 / 3) * (self.data.loc[indexes, "TOTAL"] * (
-                1 + self.inflat) + self.data.loc[indexes, 'TOTAL'] * self.educ * flag * self.data.loc[
-                                                         indexes, 'educ'])
+        self.data.loc[indexes, mon_fut] = (1 / 3) * (self.data.loc[indexes, "TOTAL"] * \
+        ( 1 + self.inflat) + self.data.loc[indexes, 'TOTAL'] * self.educ * flag * self.data.loc[indexes, 'educ'])
         return self
 
     '''
@@ -112,17 +108,16 @@ class InvestingOptions:
                   mon_fut, flag=0):
         scalar_value = np.random.choice(a=[0.017, 0, 0.005], p=[1 / 3, 1 / 3, 1 / 3])
         noise = self.make_random_noise(0, 0.005)
-        self.data.loc[indexes, mon_fut] = (1 / 3) * (self.data.loc[indexes, "TOTAL"] * (
-                1 + scalar_value + self.inflat + noise) + self.data.loc[indexes, "TOTAL"] * self.educ * flag *
-                                                     self.data.loc[
-                                                         indexes, 'educ'])
+        self.data.loc[indexes, mon_fut] = (1 / 3) * (self.data.loc[indexes, "TOTAL"] * ( \
+        1 + scalar_value + self.inflat + noise) + \
+        self.data.loc[indexes, "TOTAL"] * self.educ * flag *self.data.loc[indexes, 'educ'])
         return self
 
-    def gov_bond(self, indexes, mon_fut):
+    def gov_bond(self, indexes, mon_fut, flag=0):
         noise = self.make_random_noise(0, 0.005)
-        self.data.loc[indexes, mon_fut] = (1 / 3) * (self.data.loc[indexes, "TOTAL"] * (
-                1 + self.inflat + 0.005 + noise) + self.data.loc[indexes, "TOTAL"] * self.educ * self.data.loc[
-                                                         indexes, 'educ'])
+        self.data.loc[indexes, mon_fut] = (1 / 3) * (self.data.loc[indexes, "TOTAL"] * \
+        (1 + self.inflat + 0.005 + noise) + \
+        flag * self.data.loc[indexes, "TOTAL"] * self.educ * self.data.loc[indexes, 'educ'])
         return self
 
     def education(self, indexes, mon_fut):
@@ -134,19 +129,20 @@ class InvestingOptions:
 
     def stock_only(self, indexes, mon_fut, flag=0):
         if 0 < self.stock_together_ratio < 0.1:
-            market_premium = self.inflat + 0.03 + flag * self.educ
+            market_premium = self.inflat + 0.03
         elif 0.1 <= self.stock_together_ratio < 0.2:
-            market_premium = self.inflat + 0.05 + flag * self.educ
+            market_premium = self.inflat + 0.05
         elif 0.2 <= self.stock_together_ratio < 0.4:
-            market_premium = self.inflat + 0.07 + flag * self.educ
+            market_premium = self.inflat + 0.07
         elif 0.4 <= self.stock_together_ratio < 0.6:
-            market_premium = self.inflat + 0.09 + flag * self.educ
+            market_premium = self.inflat + 0.09
         else:
-            market_premium = self.inflat - 0.03 + flag * self.educ
-        self.data.loc[indexes, mon_fut] = 0.33 * (self.data.loc[indexes, "TOTAL"] * (1 + market_premium))
+            market_premium = self.inflat - 0.03
+        self.data.loc[indexes, mon_fut] = 0.33 * (self.data.loc[indexes, "TOTAL"] * (1 + market_premium) + \
+        self.data.loc[indexes, 'educ'] * self.educ * flag * self.data.loc[indexes, "TOTAL"])
         return self
 
-    def stock_together(self, indexes, mon_fut):
+    def stock_together(self, indexes, mon_fut, flag = 0):
         '''
         АКЦИЯ РОСТА
         '''
@@ -167,12 +163,12 @@ class InvestingOptions:
         else:
             pass
 
-        self.data.loc[indexes, mon_fut] = (1 / 3) * (
-                self.data.loc[indexes, "TOTAL"] * (1 + market_premium) + self.data.loc[
-            indexes, "TOTAL"] * self.educ * self.data.loc[indexes, 'educ'])
+        self.data.loc[indexes, mon_fut] = (1 / 3) * \
+        (self.data.loc[indexes, "TOTAL"] * (1 + market_premium) + \
+         self.data.loc[indexes, "TOTAL"] * flag * self.educ * self.data.loc[indexes, 'educ'])
         return self
 
-    def stock_index(self, indexes, mon_fut):
+    def stock_index(self, indexes, mon_fut, flag = 0):
         expected_return = 1 + self.inflat - 0.01
         '''
         ЭТО КАК РАЗ БАРСУЧИЙ СЛУЧАЙ
@@ -181,20 +177,19 @@ class InvestingOptions:
         noise_1 = self.make_random_noise(0.035, 0.0125)
         noise_2 = self.make_random_noise(0.015, 0.0125)
         add = np.random.choice(a=[noise_1, noise_2], size=1, p=[1 / 2, 1 / 2])
-        self.data.loc[indexes, mon_fut] = (1 / 3) * (
-                self.data.loc[indexes, "TOTAL"] * (expected_return + add) + self.data.loc[
-            indexes, "TOTAL"] * self.educ * self.data.loc[indexes, 'educ'])
+        self.data.loc[indexes, mon_fut] = (1 / 3) * \
+        (self.data.loc[indexes, "TOTAL"] * (expected_return + add) + \
+        self.data.loc[indexes, "TOTAL"] * self.educ * self.data.loc[indexes, 'educ'])
         return self
 
-    def sosed(self, indexes, mon_fut):
+    def sosed(self, indexes, mon_fut, flag=0):
         outcomes = np.random.choice(a=[0.1, 0.0], size=len(indexes), p=[1 / 2, 1 / 2])
         outcomes += 1
-        self.data.loc[indexes, mon_fut] = (1 / 3) * (self.data.loc[indexes, "TOTAL"] * outcomes +
-                                                     self.data.loc[indexes, "TOTAL"] * self.educ * self.data.loc[
-                                                         indexes, 'educ'])
+        self.data.loc[indexes, mon_fut] = (1 / 3) * (self.data.loc[indexes, "TOTAL"] * outcomes + \
+        self.data.loc[indexes, "TOTAL"] * flag *self.educ * self.data.loc[indexes, 'educ'])
         return self
 
-    def mortgage(self, indexes, mon_fut):
+    def mortgage(self, indexes, mon_fut, flag = 0):
         """
         Сначала проверяем, что они использовали опцию накопа в недвиге, потом зачисляем тем, у кого уже есть актив
         а потом уже начисляем тем, кто первый раз выбрал
@@ -247,19 +242,16 @@ class InvestingOptions:
         indexes_to_nakop = sub_info[sub_info >= 0].index
         indexes_to_start = sub_info[sub_info < 0].index
         if len(indexes_to_start) > 0:
-            self.accrue_mortgage(indexes_to_start, mon_fut, return_mortgage_init, flag='start')
+            self.accrue_mortgage(indexes_to_start, mon_fut, return_mortgage_init, flag='start', flag_ed=flag)
         if len(indexes_to_nakop) > 0:
-            self.accrue_mortgage(indexes_to_nakop, mon_fut, return_mortgage, flag='nakop')
-        # DEBUG VARIANTS: взял в актив а, потом в актив б - что будет
-        # еще опции - взял сначала в актив а, потом два в активы б и с, потом потом активы а б с
+            self.accrue_mortgage(indexes_to_nakop, mon_fut, return_mortgage, flag='nakop', flag_ed=flag)
         return self
 
-    def accrue_mortgage(self, indexes, mon_fut, return_rate, flag):
-        to_accrue = (1 / 3) * (
-                self.data.loc[indexes, 'TOTAL'] * return_rate + \
-                self.data.loc[indexes, 'TOTAL'] * self.educ *
-                self.data.loc[indexes, 'educ']
-        )  # было loc[condition_second]
+    def accrue_mortgage(self, indexes, mon_fut, return_rate, flag, flag_ed = 0):
+        to_accrue = (1 / 3) * \
+                (self.data.loc[indexes, 'TOTAL'] * return_rate + \
+                self.data.loc[indexes, 'TOTAL'] * self.educ * flag_ed *  \
+                self.data.loc[indexes, 'educ'])  # было loc[condition_second]
         self.data.loc[to_accrue.index, mon_fut] = to_accrue
         vals_2 = self.data.loc[to_accrue.index]['mortgage_count']
         if flag == 'start':
@@ -340,10 +332,13 @@ class InvestingOptions:
                     continue
                 '''
                 try:
-                    option_dict[option](players_, fut_money)
+                    option_dict[option](players_, fut_money, flag=1)
                 except Exception as e:
-                    # print(e)
-                    self.bank(players_, fut_money)
+                    print(e)
+                    exc_type, exc_obj, exc_tb = sys.exc_info()
+                    fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+                    print(exc_type, fname, exc_tb.tb_lineno)
+                    self.bank(players_, fut_money, flag=1)
         return self
 
     def make_random_noise(self, expected_value, std):
@@ -361,7 +356,7 @@ class InvestingOptions:
                 noise = expected_value + 3 * std
         return noise
 
-    def first_education(self):
+    def last_education(self):
         list_of_choice = [(self.choice_1, self.future_money_1),
                           (self.choice_2, self.future_money_2),
                           (self.choice_3, self.future_money_3)]
@@ -376,13 +371,13 @@ class InvestingOptions:
         Проход по инвестиционным опциям и начисление доходности для всех игроков
         :return: pd.DataFrame - итоговый датафрейм после 1 года игры.
         '''
-        self.first_education()
-        self.list_of_choices = [self.choice_1, self.choice_2, self.choice_3]
+        #self.list_of_choices = [self.choice_1, self.choice_2, self.choice_3]
         self._accrue_money_(self.choice_1, self.future_money_1)
-        self.list_of_choices = self.list_of_choices[1:]
+        #self.list_of_choices = self.list_of_choices[1:]
         self._accrue_money_(self.choice_2, self.future_money_2)
-        self.list_of_choices = self.list_of_choices[1:]
+        #self.list_of_choices = self.list_of_choices[1:]
         self._accrue_money_(self.choice_3, self.future_money_3)
+        self.last_education()
         total_ = self.data[[self.future_money_1, self.future_money_2, self.future_money_3]].sum(axis=1)
         self.data[f'TOTAL_year_{self.year}_for_dohod'] = self.data['TOTAL']
         self.data[f"asset_{self.year}_1_for_dohod"] = self.data[self.future_money_1]
@@ -396,7 +391,7 @@ class InvestingOptions:
 
 class Repository:
 
-    def __init__(self, id_, year=None, inflation_rate=0.04, educ_dohod=0.0033):
+    def __init__(self, id_, more_than_40 = None, year=None, inflation_rate=0.04, educ_dohod=0.0033):
         '''
         Базовое правило в названии колонок: сначала ГОД, потом номер актива
         :param id_: айдишники игроков
@@ -413,18 +408,21 @@ class Repository:
             year = list(Admin.objects.all())[-1:][0].Day - 2
         data = pd.DataFrame({"id": self.id_})  # инициализация id
         data["TOTAL"] = [i.SumActive() for i in a]
-        data["educ"] = 0
         data[f"asset_{year}_1"] = [i.Active_a for i in a]  # инициализация актива 1
         data[f"asset_{year}_2"] = [i.Active_b for i in a]  # инициализация актива 2
         data[f"asset_{year}_3"] = [i.Active_c for i in a]
         data['mortgage_count'] = [i.Mortgage_count for i in a]
         data['further_mortgage'] = [i.Further_mortgage for i in a]
         data['now_mortgage'] = [i.Now_mortgage for i in a]
+        data['educ'] = [i.Education for i in a]
         data = data.set_index("id")  # смена индекса на id
         self.data = data
         self.inflation = inflation_rate
         self.educ_dohod = educ_dohod
-        self.more_than_40 = False
+        if more_than_40 is None:
+            self.more_than_40 = False
+        else:
+            self.more_than_40 = more_than_40
 
     def Choice(self,
                year,  # номер года
@@ -482,7 +480,7 @@ class Repository:
         self.data = new_data
         print(new_data[['mortgage_count', 'further_mortgage', 'now_mortgage']])
         self.more_than_40 = gambling.was_more_than_40
-        return self.data
+        return self.data, self.more_than_40
 
 # a = Factory()
 # Player(Name='Vasya3').save()

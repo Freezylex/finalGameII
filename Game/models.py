@@ -46,22 +46,22 @@ class Player(models.Model):
     def actives_pred(self):
         return round((self.Active_c_pred + self.Active_a_pred + self.Active_b_pred) / 3, 4)
 
-    def NextYear(self, a, b, c, aa, bb, cc, e, f, g, d):
+    def NextYear(self, a, b, c, e, f, g, d): #aa, bb, cc после a, b, c
         self.Day += 1
         self.Mortgage_count = e
         self.Further_mortgage = f
         self.Now_mortgage = g
-        self.Active_a_pred = self.Active_a
-        self.Active_b_pred = self.Active_b
-        self.Active_c_pred = self.Active_c
+        self.Active_a_pred = (self.Active_a + self.Active_b + self.Active_c) / 3
+        self.Active_b_pred = (self.Active_a + self.Active_b + self.Active_c) / 3
+        self.Active_c_pred = (self.Active_a + self.Active_b + self.Active_c) / 3
         self.Active_a = a
         self.Active_b = b
         self.Active_c = c
         self.Education = d
         self.append_to_history(self.SumActive())
-        self.Active_a_historical = aa
-        self.Active_b_historical = bb
-        self.Active_c_historical = cc
+        self.Active_a_historical = a #aa
+        self.Active_b_historical = b #bb
+        self.Active_c_historical = c #cc
 
     def percentage_increase_active_a(self):
         res = (-self.actives_pred() + self.Active_a_historical) / self.Active_a_pred
@@ -162,6 +162,7 @@ class Factor(models.Model):
 
 class Admin(models.Model):
     Day = models.IntegerField('Day', null=False)
+    Was_more_fourty = models.BooleanField('Was_more_fourty', null=False, default = False)
 
     def __str__(self):
         return "Наступил день " + str(self.Day)

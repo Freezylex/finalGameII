@@ -211,12 +211,14 @@ def next_day_admin(request, year):
         flag = True
         day = list(Admin.objects.all())[-1:][0].Day  # Получаем текущий день от админа
         day1 = day
+        was_more_than_40 = list(Admin.objects.all())[-1:][0].Was_more_fourty
+        print(was_more_than_40, 'Was_more_print')
         Admin.objects.all().delete()  # удаляем этот день из базы
         user_factors = Factor.objects.filter(Day=day)  # достаем все выборы за этот день
         players = Factory.get_players()
         actives = Active.objects.all()
         if int(year) == 400:  # если нажата кнопка превести всех пользователей в состояние по-умлочанию
-            newday = Admin(Day=1)  # сохраняем день на 1
+            newday = Admin(Day=1, Was_more_fourty=was_more_than_40)  # сохраняем день на 1
             newday.save()
             Factor.objects.all().delete()
             for i in players:
@@ -258,7 +260,7 @@ def next_day_admin(request, year):
             fact_del = Factor.objects.filter(Day__gte=day)
             fact_del.delete()
         else:
-            new_day = Admin(Day=day + 1)
+            new_day = Admin(Day=day + 1, Was_more_fourty=was_more_than_40)
         new_day.save()  # просто меняем день на новый
         day = new_day.Day
 
@@ -269,7 +271,8 @@ def next_day_admin(request, year):
             # выбрали только тех юзеров, которые сделали выбор в данном году)
             idshniki = [i.UserID.ID for i in k]  # чтобы был всегда один и тот же порядок
             id_players_sorted = sorted([i.ID for i in list(players)])
-            game1 = factory.get_repository(id_players_sorted)  # нициализируем репозиторий только по тем юзерам, которые сделали
+            #TODO ВОТ ТУТ НАДО ДОСТАТЬ ПЕРЕМЕННУЮ ИЗ БД И ОТПРАВИТЬ ЕЕ В ФУНКЦИЮ get_repository (аргумент flag_40, линия 33 в repository.py)
+            game1 = factory.get_repository(id_players_sorted, flag_40 = was_more_than_40)  # нициализируем репозиторий только по тем юзерам, которые сделали
             # первый ход. Те, кто не сделали первых ход в дальнейшем будут игнорироваться. - Это можно пофиксить через
             # репозиторий. Если это не первый год, то вызывается уже существующий репозиторий
             if len(idshniki) < len(game1.id_):
@@ -310,21 +313,23 @@ def next_day_admin(request, year):
                              [i.Name2.Name_eng for i in k],
                              [i.Name3.Name_eng for i in k]
                              )
-            dataframe = game1.Gamble(day1)  # проводим расчёты
+            dataframe, was_more_than_40 = game1.Gamble(day1)  # проводим расчёты
+            #TODO ВОТ ТУТ Я ДОСТАЛ ЭТУ ПЕРЕМЕННУЮ И ЕЕ ТЕПЕРЬ НАДО КАК-ТО СОХРАНИТЬ В БД - ОНА ОДНА НА ВСЕХ
             i = 0
             act_a = 'asset_' + str(day1) + '_1'
             act_b = 'asset_' + str(day1) + '_2'
             act_c = 'asset_' + str(day1) + '_3'
-            act_a_historical = 'asset_' + str(day1) + '_1_' + 'for_dohod'
-            act_b_historical = 'asset_' + str(day1) + '_2_' + 'for_dohod'
-            act_c_historical = 'asset_' + str(day1) + '_3_' + 'for_dohod'
-            for a, b, c,aa, bb, cc, d, e, f, g in game1.data[[act_a, act_b, act_c,act_a_historical,act_b_historical,
-                                                   act_c_historical, 'educ', 'mortgage_count', 'further_mortgage',
+            #act_a_historical = 'asset_' + str(day1) + '_1_' + 'for_dohod'
+            #act_b_historical = 'asset_' + str(day1) + '_2_' + 'for_dohod'
+            #act_c_historical = 'asset_' + str(day1) + '_3_' + 'for_dohod'
+            for a, b, c, d, e, f, g in game1.data[[act_a, act_b, act_c, #a, b, c, aa, bb, cc, d, e, f, g
+                         #act_a_historical,act_b_historical, act_c_historical,
+                                                   'educ', 'mortgage_count', 'further_mortgage',
                                                    'now_mortgage']].to_numpy():
                 user = k[i]
                 if flag:
                     user = user.UserID  # тут просто был  просчет с юзером и идшником
-                user.NextYear(np.round(a, 4), np.round(b, 4), np.round(c, 4), aa,bb,cc, e, f, g, d)
+                user.NextYear(np.round(a, 4), np.round(b, 4), np.round(c, 4), e, f, g, d) # aa,bb,cc
                 user.Education = d
                 user.save()
                 f = user.factor_set.filter(Day=day1)[0]
@@ -333,6 +338,10 @@ def next_day_admin(request, year):
                 f.ActC_increase = user.percentage_increase_active_c()
                 f.save()
                 i += 1
+        Admin.objects.all().delete()
+        new_day = Admin(Day=day, Was_more_fourty=was_more_than_40)
+        new_day.save()  # просто меняем день на новый
+        day = new_day.Day
         players = Factory.get_players()
         counter = len(Factor.objects.filter(Day=day))
         q = len(players)
